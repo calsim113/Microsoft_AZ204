@@ -2,7 +2,7 @@
 Author: Calin Simon
 Date: now
 
-[1 Develop Azure Compute Solutions (25-30%)](#dacs)  
+[1 Develop Azure Compute Solutions (25-30%)](dacs)  
 [1.1 Implement IaaS solutions](#iis)  
 [1.2 Create Azure App Service Web Apps](#caaswa)  
 [1.3 Implement Azure Functions](#iaf)  
