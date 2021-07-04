@@ -3044,11 +3044,11 @@ Digital data always exists in one of three states: at rest, in process, and in t
 
 All three states require unique technical solutions for data classification, but the applied principles of data classification should be the same for each. Data that is classified as confidential needs to stay confidential in each state.
 
-Protect data at rest:
+**Protect data at rest**:
 - Apply disk encryption to help safeguard your data.
 - Use encryption to help mitigate risks related to unauthorized data access.
 
-Protect data in transit
+**Protect data in transit**
 
 |Best practice|	Solution|
 |-------------| --------|
@@ -3056,3 +3056,118 @@ Protect data in transit
 |Secure access from an individual workstation located on-premises to an Azure virtual network|	Use point-to-site VPN.|
 |Move large data sets over a dedicated high-speed wide-area network (WAN) link|	Use Azure ExpressRoute. If you choose to use ExpressRoute, you can also encrypt the data at the application level by using SSL/TLS or other protocols for added protection.|
 |Interact with Azure Storage through the Azure portal|	All transactions occur via HTTPS. You can also use Storage REST API over HTTPS to interact with Azure Storage and Azure SQL Database.|
+
+Data discovery and classification is part of the Advanced Data Security offering, which is a unified package for advanced Microsoft SQL Server security capabilities. You access and manage data discovery and classification via the central SQL Advanced Data Security portal.
+
+Data discovery and classification introduces a set of advanced services and SQL capabilities, forming a SQL Information Protection paradigm aimed at protecting the data, not just the database:
+- Discovery and recommendations - The classification engine scans your database and identifies columns containing potentially sensitive data. It then provides you with a more natural way to review and apply the appropriate classification recommendations via the Azure portal.
+- Labeling - Sensitivity classification labels can be persistently tagged on columns using new classification metadata attributes introduced into the SQL Server Engine. This metadata can then be utilized for advanced sensitivity-based auditing and protection scenarios.
+- Query result set sensitivity - The sensitivity of the query result set is calculated in real-time for auditing purposes.
+- Visibility - You can view the database classification state in a detailed dashboard in the Azure portal. Additionally, you can download a report (in Microsoft Excel format) that you can use for compliance and auditing purposes, in addition to other needs.
+
+Classifications have two metadata attributes:
+- Labels - These are the main classification attributes used to define the sensitivity level of the data stored in the column.
+- Information Types - These provide additional granularity into the type of data stored in the column.
+
+SQL Information Protection (SQL IP) brings a set of advanced services and SQL capabilities, forming a new information protection paradigm in SQL aimed at protecting the data, not just the database:
+- Azure SQL Auditing – Azure SQL Auditing tracks database events and writes them to an audit log in your Azure storage account, Log Analytics workspace or Event Hub.
+- Data Discovery & Classifications – Is built into Azure SQL Database, Azure SQL Managed Instance, and Azure Synapse Analytics. It provides advanced capabilities for discovering, classifying, labeling, and reporting the sensitive data in your databases.
+- Dynamic data masking – Azure SQL Database, Azure SQL Managed Instance, and Azure Synapse Analytics support dynamic data masking. Dynamic data masking limits sensitive data exposure by masking it to non-privileged users.
+- Security Center – Scans your database and makes recommendations to improve security. Also allows you to set up and monitor Security Alerts.
+- Transparent data encryption – Transparent data encryption encrypts your databases, backups, and logs at rest without any changes to your application. To enable encryption, go to each database.
+
+An important aspect of the IP paradigm is the ability to monitor access to sensitive data. Azure SQL Database Auditing has been enhanced to include a new field in the audit log. The data_sensitivity_information field logs the sensitivity classifications (labels) of the actual data that was returned by the query. Consider configuring Azure SQL Database Auditing for monitoring and auditing access to your classified sensitive data.
+
+Once an organization's data has been examined and classified, the next decision to make is how long to keep the data around. Data recovery and disposal is an essential aspect of managing data assets. A data retention policy defines the principles for data recovery and disposal and enforced in the same manner as data reclassification. These tasks are typically performed by the custodian and administrator roles as a collaborative task.
+
+Immutable storage for Azure Blob Storage enables users to store business-critical data in a write once, read many (WORM) state. This state makes the data unerasable and unmodifiable for a user-specified interval. Blobs can be created and read, but not modified or deleted, for the duration of the retention interval.
+
+Immutable storage enables:
+- Time-based retention policy support - Users set policies to store data for a specified interval.
+- Legal hold policy support - When the retention interval is not known, users can set legal holds to store data immutably until the legal hold is cleared. When a legal hold is set, blobs can be created and read, but not modified or deleted. Each legal hold is associated with a user-defined alphanumeric tag that is used as an identifier string (such as a case ID).
+- Support for all blob tiers - WORM policies are independent of the Azure Blob Storage tier and apply to all tiers: hot, cool, and archive. Users can transition data to the most cost-optimized tier for their workloads while maintaining data immutability.
+- Container-level configuration - Users can configure time-based retention policies and legal hold tags at the container level. By using simple container-level settings, users can create and lock time-based retention policies, extend retention intervals, set and clear legal holds, and more. These policies apply to all the blobs in the container, both existing and new.
+- Audit logging support - Each container includes an audit log, which displays up to five time-based retention commands for locked time-based retention policies. However, the log has a maximum of three logs for retention interval extensions or time-based retention. The log contains the user ID, command type, time stamps, and retention interval. For legal holds, the log contains the user ID, command type, time stamps, and legal hold tags.
+
+The audit log is kept for the lifetime of the container, in accordance with the SEC 17a-4(f) regulatory guidelines. The Azure Activity Log shows a more comprehensive log of all the control plane activities. It is the user's responsibility to store those logs persistently, as might be required for regulatory or other purposes.
+
+Digital information is always subject to the laws of the country or region where it's stored. This concept is known as data sovereignty. Many of the concerns that surround data sovereignty relate to enforcing privacy regulations and preventing data that are stored in a foreign country from being subpoenaed by the host country or region's government.
+
+Azure operates in multiple geographies around the world. Azure geography is a defined area of the world that contains at least one Azure Region. An Azure region is an area containing one or more data centers. Each Azure region is paired with another region within the same geography, forming a region pair. Across the region pairs, Azure serializes platform updates (or planned maintenance) so that only one region is updated at a time. If an outage affecting multiple regions occurs, one region in each pair will be prioritized for recovery.
+
+Benefits of Azure paired regions:
+- Physical isolation - When possible, Azure services prefer at least 300 miles of separation between datacenters in a regional pair.
+- Platform-provided replication - Some services such as geo-redundant storage provide automatic replication to the paired region.
+- Region recovery order - In the event of a widespread outage, recovery of one region is prioritized out of every pair.
+- Sequential updates - Planned Azure system updates are rolled out to paired regions sequentially, not at the same time.
+- Data residency - To meet data residency requirements for tax and law enforcement jurisdiction purposes, a region resides within the same geography as its pair (with the exception of Brazil South).
+
+In addition to our commitments under the Standard Contractual Clauses and other model contracts, Microsoft is certified to the EU-U.S. Privacy Shield Framework as set forth by the U.S. Department of Commerce regarding the collection, use, and retention of personal information transferred from the European Union to the United States. Microsoft participation in the EU-U.S. Privacy Shield applies to all personal data that is subject to the Microsoft Privacy Statement and is received from the EU, European Economic Area, and Switzerland. Microsoft also abides by Swiss data protection law regarding the processing of personal data from the European Economic Area and Switzerland.
+
+##### Configure and manage secrets in Azure Key Vault
+
+Azure Key Vault is a centralized cloud service for storing application secrets such as encryption keys, certificates, and server-side tokens. Key Vault helps you control your applications' secrets by keeping them in a single central location and providing secure access, permissions control, and access logging.
+
+There are three primary concepts used in an Azure Key Vault: 
+1. **Vaults**. You use Azure Key Vault to create multiple secure containers, called vaults. Vaults help reduce the chances of accidental loss of security information by centralizing application secrets storage. Organizations will have several key vaults. Each key vault is a collection of cryptographic keys and cryptographically protected data (call them "secrets") managed by one or more responsible individuals within your organization. Azure CLI: `az keyvault create --resource-group <resource-group> --name <your-unique-vault-name>`, PowerShell: `New-AzKeyVault -Name <your-unique-vault-name> -ResourceGroupName <resource-group>`
+2. **Keys**. A given key in a key vault is a cryptographic asset destined for a particular use such as the asymmetric master key of Microsoft Azure RMS, or the asymmetric keys used for SQL Server TDE (Transparent Data Encryption), CLE (Column Level Encryption) and Encrypted backup. Microsoft and your apps don't have access to the stored keys directly once a key is created or added to a key vault. Applications must use your keys by calling cryptography methods on the Key Vault service. The Key Vault service performs the requested operation within its hardened boundary. The application never has direct access to the keys. Keys can be single instanced (only one key exists), or be versioned. In the versioned case, a key is an object with a primary (active) key, and a collection of zero, one or more secondary (archived) keys created when keys are rolled (renewed). There are two variations on keys in Key Vault:
+    - Hardware-protected. The Key Vault service supports using hardware security modules (HSMs) that provide a hardened, tamper-resistant environment for cryptographic processing and key generation.
+    - Software-protected. The primary difference (besides price) with a software-protected key is when cryptographic operations are performed, they are done in software using Azure compute services while for HSM-protected keys the cryptographic operations are performed within the HSM. You determine the key generation type when you create the key. For example, the Azure PowerShell command Add-AzureKeyVaultKey has a Destination parameter that can be set to either Software or HSM: `$key = Add-AzureKeyVaultKey -VaultName 'contoso' -Name 'MyFirstKey' -Destination 'HSM'`
+3. **Secrets**. Secrets are small (less than 10K) data blobs protected by a HSM-generated key created with the Key Vault. Secrets exist to simplify the process of persisting sensitive settings that almost every application has: storage account keys, .PFX files, SQL connection strings, data encryption keys, etc.
+
+Key Vault uses:
+- Secrets management
+- Key management
+- Certificate management
+
+|Best practice|	Solution|
+|-------------|---------|
+|Grant access to users, groups, and applications at a specific scope.|	Use RBAC's predefined roles. For example, to grant access to a user to manage key vaults, you would assign the predefined role Key Vault Contributor to this user at a specific scope. The scope, in this case, would be a subscription, a resource group, or just a specific key vault. If the predefined roles don't fit your needs, you can define your own roles.|
+|Control what users have access to.|	Access to a key vault is controlled through two separate interfaces: management plane, and data plane. The management plane and data plane access controls work independently. Use RBAC to control what users have access to. For example, if you want to grant an application the rights to use keys in a key vault, you only need to grant data plane access permissions using key vault access policies. No management plane access is needed for this application. Conversely, if you want a user to be able to read vault properties and tags but not have any access to keys, secrets, or certificates, by using RBAC, you can grant read access to the management plane. No access to the data plane is required.|
+|Store certificates in your key vault.|	Azure Resource Manager can securely deploy certificates stored in Azure Key Vault to Azure VMs when the VMs are deployed. By setting appropriate access policies for the key vault, you also control who gets access to your certificate. Another benefit is that you manage all your certificates in one place in Azure Key Vault.|
+|Ensure that you can recover a deletion of key vaults or key vault objects.|	Deletion of key vaults or key vault objects can be either inadvertent or malicious. Enable the soft delete and purge protection features of Key Vault, particularly for keys that are used to encrypt data at rest. Deletion of these keys is equivalent to data loss, so you can recover deleted vaults and vault objects if needed. Practice Key Vault recovery operations regularly.|
+
+Key Vault access has two facets: the management of the Key Vault itself, and accessing the data contained in the Key Vault. Documentation refers to these facets as the management plane and the data plane.
+- Authentication. Azure Key Vault uses Azure Active Directory (Azure AD) to authenticate users and apps that try to access a vault. Authentication is always performed by associating the Azure AD tenant of the subscription that the Key Vault is part of, and every user or app making a request having to be known to Azure AD. There is no support for anonymous access to a Key Vault.
+- Authorization. Management operations (creating a new Azure Key Vault) use role-based access control (RBAC). There is a built-in role Key Vault Contributor that provides access to management features of key vaults, but doesn't allow access to the key vault data. This is the recommended role to use. There's also a Contributor role that includes full administration rights - including the ability to grant access to the data plane. Reading and writing data in the Key Vault uses a separate Key Vault access policy. A Key Vault access policy is a permission set assigned to a user or managed identity to read, write, and/or delete secrets and keys. You can create an access policy using the CLI, REST API, or Azure portal. The system has a list of predefined management options that define the permissions allowed for this policy. You can then customize the permissions as desired by changing the Key permissions entries. Developers will only need `Get` and `List` permissions to a development-environment vault. A lead or senior developer will need full permissions to the vault to change and add secrets when necessary. Full permissions to production-environment vaults are typically reserved for senior operations staff. For apps, often only `Get` permissions are required as they will just need to retrieve secrets.
+
+You should determine the minimum network access required - for example you can restrict Key Vault endpoints to specific Azure Virtual Network subnets, specific IP addresses, or trusted Microsoft services including Azure SQL, Azure App Service, and various data and storage services that use encryption keys.
+
+###### Certificates
+
+First, you can create self-signed certificates directly in the Azure portal. This process creates a public/private key pair and signs the certificate with its own key. These certificates can be used for testing and development.
+
+Second, you can create an X.509 certificate signing request (CSR):
+1. your application is creating a certificate which internally begins by creating a key in your Azure Key Vault.
+2. Key Vault returns a Certificate Signing Request (CSR) to your application.
+3. Your application passes the CSR to your chosen CA.
+4. Your chosen CA responds with an X.509 Certificate.
+5. Your application completes the new certificate creation with a merger of the X.509 Certificate from your CA.
+
+Third, you can connect your Key Vault with a trusted certificate issuer (referred to as an integrated CA) and create the certificate directly in Azure Key Vault.
+1. Your application is creating a certificate which internally begins by creating a key in your key vault.
+2. Key Vault sends a SSL Certificate Request to the CA.
+3. Your application polls, in a loop and wait process, for your Key Vault for certificate completion. The certificate creation is complete when Key Vault receives the CA’s response with x509 certificate.
+4. The CA responds to Key Vault's SSL Certificate Request with an X509 SSL Certificate.
+5. Your new certificate creation completes with the merger of the X509 Certificate for the CA.
+
+Finally, you can import existing certificates - this allows you to add certificates to Key Vault that you are already using. The imported certificate can be in either PFX or PEM format and must contain the private key. For example, here's a PowerShell script to upload a certificate:
+```powershell
+$pfxFilePath = "C:\WebsitePrivateCertificate.pfx"
+$pwd = "password-goes-here"
+$flag = [System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::Exportable
+$pkcs12ContentType = [System.Security.Cryptography.X509Certificates.X509ContentType]::Pkcs12
+
+$collection = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2Collection  
+$collection.Import($pfxFilePath, $pwd, $flag)
+
+$clearBytes = $collection.Export($pkcs12ContentType)
+$fileContentEncoded = [System.Convert]::ToBase64String($clearBytes)
+$secret = ConvertTo-SecureString -String $fileContentEncoded -AsPlainText –Force
+$secretContentType = 'application/x-pkcs12'
+
+# Replace the following <vault-name> and <key-name>.
+Set-AzKeyVaultSecret -VaultName <vault-name> -Name <key-name> -SecretValue $secret -ContentType $secretContentType
+```
+
+##### Secure your Azure resources with Azure role-based access control (Azure RBAC)
