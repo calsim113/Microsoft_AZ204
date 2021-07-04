@@ -2984,3 +2984,75 @@ Azure Dedicated Host:
 For high availability, you can provision multiple hosts in a host group, and deploy your VMs across this group. VMs on dedicated hosts can also take advantage of maintenance control. This feature enables you to control when regular maintenance updates occur, within a 35-day rolling window.
 
 ##### Top 5 security items to consider before pushing to production
+
+Azure Security Center (ASC) is a monitoring service that provides threat protection across all of your services both in Azure, and on-premises. It can:
+- Provide security recommendations based on your configurations, resources, and networks.
+- Monitor security settings across on-premises and cloud workloads and automatically apply required security to new services as they come online.
+- Continuously monitor all your services and perform automatic security assessments to identify potential vulnerabilities before they can be exploited.
+- Use machine learning to detect and block malware from being installed in your services and virtual machines. You can also allowlist applications to ensure that only the apps you validate are allowed to execute.
+- Analyze and identify potential inbound attacks and help to investigate threats and any post-breach activity which might have occurred.
+- Just-In-Time access control for ports, reducing your attack surface by ensuring the network only allows traffic you require.
+
+While you can use a free Azure subscription tier with ASC, it is limited to assessments and recommendations of Azure resources only. To really leverage ASC, you will need to upgrade to a Standard tier subscription.
+
+The most prevalent security weakness of current applications is a failure to correctly process data that is received from external sources, particularly user input. You must validate every input for your application. Always use an allow list approach, which means you only accept "known good" input, instead of a deny list. Treat ALL data as untrusted and you will protect yourself from most of the common web app vulnerabilities.
+
+Do not create code like the following inline SQL example:
+```sql
+string userName = Request.QueryString["username"]; // receive input from the user BEWARE!
+...
+string query = "SELECT *  FROM  [dbo].[users] WHERE userName = '" + userName + "'";
+```
+
+Instead, use parameterized SQL statements or stored procedures such as this:
+```sql
+-- Lookup a user
+CREATE PROCEDURE sp_findUser
+(
+@UserName varchar(50)
+)
+
+SELECT *  FROM  [dbo].[users] WHERE userName = @UserName
+```
+
+Any output you present either visually or within a document should always be encoded and escaped. This can protect you in case something was missed in the sanitization pass, or the code accidentally generates something that can be used maliciously. This design principle will make sure that everything is displayed as output and not inadvertently interpreted as something that should be executed, which is another common attack technique that is referred to as "Cross-Site Scripting" (XSS).
+
+Since XSS prevention is a common application requirement, this security technique is another area where ASP.NET will do the work for you. By default, all output is already encoded. If you are using another web framework, you can verify your options for output encoding on websites with the OWASP XSS Prevention Cheatsheet.
+
+Azure Key Vault is a secret store: a centralized cloud service for storing application secrets. Key Vault keeps your confidential data safe by keeping application secrets in a single central location and providing secure access, permissions control, and access logging.
+
+Secrets are stored in individual vaults, each with their own configuration and security policies to control access. You can then get to your data through a REST API, or through a client SDK available for most languages. Often "well supported" is synonymous with "modern".
+
+Much like updating the core framework, branching your code, updating the components and testing is a good technique to validate a new version of a dependency. The `dotnet` command-line tool has an `add package` and `remove package` option to add or remove NuGet packages but doesn't have a corresponding `update package` command. However, it turns out you can run d`otnet add package <package-name>` in your project and it will automatically upgrade the package to the latest version. This is an easy way to update dependencies without having to open the IDE.
+
+Always check to see what security features your frameworks offer. Never roll your own security if there's a standard technique or capability built in. Writing your own security controls, instead of using those provided by your framework, is not only wasting time, it's less secure.
+
+Using components with known vulnerabilities is a huge problem in our industry. It is so problematic that it has made the OWASP top 10 list of worst web application vulnerabilities, holding at #9 for several years.
+
+Mitre is a non-profit organization that maintains the Common Vulnerabilities and Exposures list. This list is a publicly searchable set of known cybersecurity vulnerabilities in apps, libraries, and frameworks. If you find a library or component in the CVE database, it has known vulnerabilities.
+
+We looked at several key security tips:
+- Use Azure Security Center
+- Verify your application inputs and outputs
+- Store your secrets into Key Vault
+- Ensure you are using the latest version of your framework, and using its security features
+- Verify your program dependencies and libraries are safe to use
+
+##### Configure security policies to manage data
+
+Digital data always exists in one of three states: at rest, in process, and in transit.
+
+All three states require unique technical solutions for data classification, but the applied principles of data classification should be the same for each. Data that is classified as confidential needs to stay confidential in each state.
+
+Protect data at rest:
+- Apply disk encryption to help safeguard your data.
+- Use encryption to help mitigate risks related to unauthorized data access.
+
+Protect data in transit
+
+|Best practice|	Solution|
+|-------------| --------|
+|Secure access from multiple workstations located on-premises to an Azure virtual network|	Use site-to-site VPN.|
+|Secure access from an individual workstation located on-premises to an Azure virtual network|	Use point-to-site VPN.|
+|Move large data sets over a dedicated high-speed wide-area network (WAN) link|	Use Azure ExpressRoute. If you choose to use ExpressRoute, you can also encrypt the data at the application level by using SSL/TLS or other protocols for added protection.|
+|Interact with Azure Storage through the Azure portal|	All transactions occur via HTTPS. You can also use Storage REST API over HTTPS to interact with Azure Storage and Azure SQL Database.|
