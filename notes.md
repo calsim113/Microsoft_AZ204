@@ -630,6 +630,7 @@ You can specify a name of up to 15 characters on a Windows VM and 64 characters 
 This lets you place your VMs as close as possible to your users to improve performance and to meet any legal, compliance, or tax requirements. Two things to consider. First, the location can limit your available options. First, the location can limit your available options
 - Determine the size of the VM
 Workload options are classified as follows on Azure:
+
 | Option | Description |  
 | ------ | ----------- |  
 | General purpose | General-purpose VMs are designed to have a balanced CPU-to-memory ratio. Ideal for testing and development, small to medium databases, and low to medium traffic web servers. |  
@@ -641,6 +642,7 @@ Workload options are classified as follows on Azure:
 Changing a running VM size will automatically reboot the machine to complete the request. Be careful about resizing production VMs - they will be rebooted automatically which can cause a temporary outage and change some configuration settings such as the IP address.
 - Understanding the pricing model
 Compute costs: Compute expenses are priced on a per-hour basis but billed on a per-minute basis. Storage costs: You are charged separately for the storage the VM uses. You're able to choose from two payment options for compute costs.
+
 | Option | Description |
 | -----  | ----------- |
 | Pay as you go | With the pay-as-you-go option, you pay for compute capacity by the second, with no long-term commitment or upfront payments. |
@@ -649,6 +651,7 @@ Compute costs: Compute expenses are priced on a per-hour basis but billed on a p
 Best practice is that all Azure virtual machines will have at least two virtual hard disks (VHDs). The first disk stores the operating system, and the second is used as temporary storage. Separating out the data to different VHDs allows you to manage the security, reliability, and performance of the disk independently. The data for each VHD is held in Azure Storage as page blobs, which allows Azure to allocate space only for the storage you use. You pay for the storage you are consuming.
 A storage account provides access to objects in Azure Storage for a specific subscription. VMs always have one or more storage accounts to hold each attached virtual disk.
 When you create disks, you will have two options for managing the relationship between the storage account and each VHD.
+
 | Option | Description |  
 | ------ | ----------- |
 | Unmanaged disks | With unmanaged disks, you are responsible for the storage accounts that are used to hold the VHDs that correspond to your VM disks. You pay the storage account rates for the amount of space you use. A single storage account has a fixed-rate limit of 20,000 I/O operations/sec. This means that a storage account is capable of supporting 40 standard virtual hard disks at full utilization. If you need to scale out with more disks, then you'll need more storage accounts, which can get complicated. |
