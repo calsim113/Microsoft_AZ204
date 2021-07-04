@@ -2,18 +2,18 @@
 Author: Calin Simon
 Date: now
 
-[1 Develop Azure Compute Solutions (25-30%)](#1)  
-[1.1 Implement IaaS solutions](#1.1)  
-[1.2 Create Azure App Service Web Apps](#1.2)  
-[1.3 Implement Azure Functions](#1.3)  
-[2 Develop for Azure Storage (15-20%)](#2)  
-[2.1 Develop solutions that use Cosmos DB storage](#2.1)  
-[2.2 Develop solutions that use blob storage](#2.2)  
-[3 Implement Azure Security (20-25%)](#3)  
-[3.1 Implement user authentication and authorization](#3.1)  
-[3.2 Implement secure cloud solutions](#3.2)  
+[1 Develop Azure Compute Solutions (25-30%)](#dacs)  
+[1.1 Implement IaaS solutions](#iis)  
+[1.2 Create Azure App Service Web Apps](#caaswa)  
+[1.3 Implement Azure Functions](#iaf)  
+[2 Develop for Azure Storage (15-20%)](#dfas)  
+[2.1 Develop solutions that use Cosmos DB storage](#2dstucds)  
+[2.2 Develop solutions that use blob storage](#dstubs)  
+[3 Implement Azure Security (20-25%)](#ias)  
+[3.1 Implement user authentication and authorization](#iuaaa)  
+[3.2 Implement secure cloud solutions](#iscs)  
 
-## 1 Develop Azure Compute Solutions (25-30%) {#1}
+## 1 Develop Azure Compute Solutions (25-30%) {#dacs}
 
 ### 1.1 Implement IaaS solutions {#1.1}
 
