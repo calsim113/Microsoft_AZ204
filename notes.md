@@ -925,8 +925,10 @@ az webapp create -g webapps-dev-rg \
 Best way to automate deployment is through ARM templates
 
 ##### Configuring Azure App Service
+
 Securing a Web App with SSL.  
-Web Apps are published under the domain <web app name>.azurewebsites.net which provides secure https connection availability. We can also use custom domains. So, for example, we could take the pluralsight.com domain if we wanted to, and we could make that resolve over to a web application in App Service. And we could even map an SSL certificate to that web application, and that would ensure that external users going to that domain would get a secure connection, and they wouldn't get any warnings in a browser window because we could upload a certificate that has the pluralsight.com domain as one of the subject names. Considerations when you want to secure a domain with SSL/TLS binding.
+
+Web Apps are published under the domain `<web app name>.azurewebsites.net` which provides secure https connection availability. We can also use custom domains. So, for example, we could take the pluralsight.com domain if we wanted to, and we could make that resolve over to a web application in App Service. And we could even map an SSL certificate to that web application, and that would ensure that external users going to that domain would get a secure connection, and they wouldn't get any warnings in a browser window because we could upload a certificate that has the pluralsight.com domain as one of the subject names. Considerations when you want to secure a domain with SSL/TLS binding:
 - Use Basic, Standard, Premium, or Isolated plan types
 - Public (bought) vs. private (not all clients accept these) certificates
 - Managed (bought in the Azure portal) vs. un-managed (self-signed and commercially bought)certificates
@@ -3180,4 +3182,121 @@ A role definition is a collection of permissions. It's sometimes just called a r
 Scope is where the access applies to.
 	
 ##### Authenticate apps to Azure services by using service principals and managed identities for Azure resources
+
+Think of an Azure service principal as a proxy account, or identity, that represents your app or service. This account is managed by Azure Active Directory (Azure AD).
 	
+Azure AD applications must be assigned roles so that they can work with other services. Azure uses role-based access control (RBAC) to tightly manage access to Azure resources, and manage how those resources are used.
+	
+To access Azure resources by using service principals, you need two parameters:
+- Directory (tenant) ID
+- Application (client) ID
+
+To authenticate requests, the application needs credentials. The credentials allow the application to identify itself. Choose from two forms of credentials:
+- Certificate: You generate a certificate locally, and then upload the .cer, .pem, or .crt file. A certificate is commonly referred to as a public key.
+- Client secret: This complex secret string is generated in Azure. A client secret is also known as an application password.
+	
+The most secure and convenient way to handle authentication within Azure is to use managed identities.
+	
+Azure Resource Manager is called when an application passes a token to Azure. Azure Resource Manager is the framework that a custom application uses to connect or authenticate to Azure resources.
+
+###### Managed identities
+
+Azure managed identity is a feature of Azure Active Directory (Azure AD) that you can use free of charge. This feature automatically creates identities to allow apps to authenticate with Azure resources and services. To use managed identities, you don't need to provide authentication credentials in code. The managed identity feature solves the credential problem by granting an automatically managed identity.
+
+When you work with managed identities, you should know some common terms:
+- Client ID: A unique ID that's linked to the Azure AD application and service principal that was created when you provisioned the identity.
+- Object ID: The service principal object of the managed identity.
+- Azure Instance Metadata Service: A REST API that's enabled when Azure Resource Manager provisions a VM. The endpoint is accessible only from within the VM.
+	
+You can create two types of managed identity:
+- System-assigned identity. You enable system-assigned identity directly on an Azure service instance, such as a VM. When you enable that identity, Azure creates a service principal through Azure Resource Manager.
+- User-assigned managed identity. User-assigned managed identity is created as a standalone Azure resource. It's independent of any app. When user-assigned identity is provisioned, Azure creates a service principal just as it does for a system-assigned identity. However, a user-assigned identity isn't tied to a specific resource, so you can assign it to more than one application.
+	
+You can create both types of identity by using an Azure VM. Configure them in Azure Resource Manager:
+1. From Azure Resource Manager, the VM sends a request for a managed identity.
+2. In Azure Active Directory (Azure AD), a service principal is created for the VM within the tenant that the subscription trusts.
+3. Azure Resource Manager updates the Azure Instance Metadata Service identity endpoint with the service principal client ID and certificate.
+4. The new service principal information is used to grant the VM access to Azure resources. To give your app access to the key vault, use role-based access control (RBAC) in Azure AD. Assign the required role to the VM's service principal. For example, assign the read role or contribute role.
+5. A call is made to Azure AD to request an access token by using the client ID and certificate.
+6. Azure AD returns a JSON Web Token access token.
+	
+An application that runs on an Azure resource, such as a VM or a function app, uses a managed identity to authenticate and access other resources. The authentication and access process involves a series of requests to the Azure Instance Metadata Service:
+1. The service validates the identity that's associated with your app.
+2. It generates a resource access token.
+3. Your app sends the token to the resource that it needs to access.
+4. The token is authenticated.
+5. If the token is valid, the resource verifies that the token represents an identity that has the appropriate authorization for the request.
+6. When this test passes, your application can access the resource.
+	
+The following C# example generates a token for Azure Storage:
+```csharp
+AzureServiceTokenProvider azureServiceTokenProvider = new AzureServiceTokenProvider();
+var token = await azureServiceTokenProvider.GetAccessTokenAsync("https://storage.azure.com/");
+```
+
+```sh
+export VMNAME=prodserver
+export KVNAME=furniture-secrets$RANDOM
+
+az keyvault create --name $KVNAME \
+    --resource-group learn-074ec844-0a45-4367-ae42-507d85accde9 \
+    --default-action Allow \
+    --location $(az resource list --output tsv --query [0].location) \
+    --sku standard
+    
+export publicIP=$(az vm create \
+    --name $VMNAME \
+    --resource-group learn-074ec844-0a45-4367-ae42-507d85accde9 \
+    --image UbuntuLTS \
+    --generate-ssh-keys \
+    --output tsv \
+    --query "publicIpAddress")
+    
+az vm identity assign \
+  --name $VMNAME \
+  --resource-group learn-074ec844-0a45-4367-ae42-507d85accde9
+  
+az keyvault secret set \
+  --vault-name $KVNAME \
+  --name DBCredentials \
+  --value "Server=tcp:prodserverSQL.database.windows.net,1433;Database=myDataBase;User ID=mylogin@myserver;Password=examplePassword;Trusted_Connection=False;Encrypt=True;"
+
+# connect with VM
+ssh $publicIP
+
+sudo snap install dotnet-sdk --classic --channel=3.1
+
+git clone https://github.com/MicrosoftDocs/mslearn-authenticate-apps-with-managed-identities identity
+
+exit
+```
+
+To create a user-assigned identity
+```sh
+az identity create \
+  --name <identity name>
+  --resource-group <resource group>
+  
+az identity list \
+  --resource-group <resource group>
+  
+az functionapp identity assign \
+  --name <function app name> \
+  --resource-group <resource group> \
+  --role <principal id>
+  
+az keyvault set-policy \
+    --name <key vault name> \
+    --object-id <principal id> \
+    --secret-permissions get list
+    
+az identity delete \
+  --name <identity name>
+  --resource-group <resource group>
+  ```
+  
+Using the DefaultAzureCredential provider as follows, we can authenticate with a managed identity when in production, and also leverage local developer credentials during development. To use it, you'll need to install the Azure.Identity package: `dotnet install Azure.Identity`. Using the DefaultAzureCredential, we can now create an authenticated SecretClient.
+```csharp
+var client = new SecretClient(new Uri(keyVaultUrl), new DefaultAzureCredential());
+KeyVaultSecret secretWithValue = await client.GetSecretAsync(secret.Name).ConfigureAwait(false);
+```
