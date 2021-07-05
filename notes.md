@@ -28,8 +28,7 @@ Virtual Machine Components
 - Virtual Disk. At least one per VM to host the OS.
 
 Methods to create an Azure Virtual Machine
-- Azure Portal
-First, you define the basics, disks, networking, management, advancement, tags. Then, you define the instance details: name, region, availability options, image (available in selecte region), size, azure spot instance (setting to let Azure take compute power from you if needed). Next, create a username and password for admin control of the VM. With linux, you can also add a SSH public key. Lastly, select which VM network ports are accessible from the public internet. You can further customize the network configurations from the networking tab.
+- Azure Portal. First, you define the basics, disks, networking, management, advancement, tags. Then, you define the instance details: name, region, availability options, image (available in selecte region), size, azure spot instance (setting to let Azure take compute power from you if needed). Next, create a username and password for admin control of the VM. With linux, you can also add a SSH public key. Lastly, select which VM network ports are accessible from the public internet. You can further customize the network configurations from the networking tab.
 - Azure CLI
 - Azure Powershell (Az Module)
 - Azure ARM Templates
@@ -3171,3 +3170,14 @@ Set-AzKeyVaultSecret -VaultName <vault-name> -Name <key-name> -SecretValue $secr
 ```
 
 ##### Secure your Azure resources with Azure role-based access control (Azure RBAC)
+
+In several areas in the Azure portal, you'll see a pane named Access control (IAM), also known as identity and access management. On this pane, you can see who has access to that area and their role. Using this same pane, you can grant or remove access.
+	
+A security principal is just a fancy name for a user, group, or application that you want to grant access.
+	
+A role definition is a collection of permissions. It's sometimes just called a role. A role definition lists the permissions that can be performed, such as read, write, and delete. Roles can be high-level, like Owner, or specific, like Virtual Machine Contributor.
+	
+Scope is where the access applies to.
+	
+##### Authenticate apps to Azure services by using service principals and managed identities for Azure resources
+	
