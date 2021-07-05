@@ -3300,3 +3300,86 @@ Using the DefaultAzureCredential provider as follows, we can authenticate with a
 var client = new SecretClient(new Uri(keyVaultUrl), new DefaultAzureCredential());
 KeyVaultSecret secretWithValue = await client.GetSecretAsync(secret.Name).ConfigureAwait(false);
 ```
+##### Control access to Azure Storage with shared access signatures
+
+Four security options are available for blob storage:
+- Public access. Public access is also known as anonymous client access. Anonymous access is controlled at the container level, not individual blobs.
+- Azure Active Directory (Azure AD). You use this form of authentication if you're running an app with managed identities or using security principals. Authorization takes a two-step approach. First, you authenticate a security principal that returns an OAuth 2.0 token if successful. This token is then passed to Azure Storage to enable authorization to the requested resource.
+- Shared key. Azure Storage creates two 512-bit access keys for every storage account that's created. You share these keys to grant clients access to the storage account. These keys grant anyone with access the equivalent of root access to your storage.
+- Shared access signature. A SAS lets you grant granular access to files in Azure Storage.
+
+There are three types of shared access signatures:
+- User delegation SAS: Secured with Azure AD credentials and can be used only on Azure Blob storage.
+- Service SAS: Secured with a storage account key. A service SAS is used on only one service at a time, like Blob storage, Azure Queue storage, Azure Table storage, or Azure Files.
+- Account SAS: Secured with a storage account key. The account SAS has the same controls as a service SAS but can also control access to service-level operations, like Get Service Stats.
+
+When you use a SAS to access data stored in Azure Storage, you need two components. The first is a URI to the resource you want to access. The second part is a SAS token that you've created to authorize access to that resource. In a single URI, such as `https://medicalrecords.blob.core.windows.net/patient-images/patient-116139-nq8z7f.jpg?sp=r&st=2020-01-20T11:42:32Z&se=2020-01-20T19:42:32Z&spr=https&sv=2019-02-02&sr=b&sig=SrW1HZ5Nb6MbRzTbXCaPm%2BJiSEn15tC91Y4umMPwVZs%3D`, you can separate the URI from the SAS token as follows:
+
+| URI| 	SAS token|
+|----|-----------|
+|https://medicalrecords.blob.core.windows.net/patient-images/patient-116139-nq8z7f.jpg?|	sp=r&st=2020-01-20T11:42:32Z&se=2020-01-20T19:42:32Z&spr=https&sv=2019-02-02&sr=b&sig=SrW1HZ5Nb6MbRzTbXCaPm%2BJiSEn15tC91Y4umMPwVZs%3D|
+
+The SAS token itself is made up of several components.
+
+|Component|	Description|
+|---------|----------------|
+|sp=r|	Controls the access rights. The values can be a for add, c for create, d for delete, l for list, r for read, or w for write. This example is read only. The example sp=acdlrw grants all the available rights.|
+|st=2020-01-20T11:42:32Z|	The date and time when access starts.|
+|se=2020-01-20T19:42:32Z|	The date and time when access ends. This example grants eight hours of access.|
+|sv=2019-02-02|	The version of the storage API to use.|
+|sr=b|	The kind of storage being accessed. In this example, b is for blob.|
+|sig=SrW1HZ5Nb6MbRzTbXCaPm%2BJiSEn15tC91Y4umMPwVZs%3D|	The cryptographic signature.|
+
+The signature is signed with your storage account key if you create a service or account SAS. If you use an Azure Active Directory (Azure AD) security principal with access to the storage, you create a user delegation SAS. You also grant the Microsoft.Storage/storageAccounts/blobServices/generateUserDelegationKey action to the principal.
+
+Create a SAS in .NET
+```csharp
+// Create a blob container to connect to the storage account on Azure
+BlobContainerClient container = new BlobContainerClient( "ConnectionString", "Container" );
+
+// Retrieve the blob you want to create a SAS token for and create a BlobClient
+foreach (BlobItem blobItem in container.GetBlobs())
+{
+    BlobClient blob = container.GetBlobClient(blobItem.Name);
+}
+
+// Create a BlobSasBuilder object for the blob you use to generate the SAS token
+BlobSasBuilder sas = new BlobSasBuilder
+{
+    BlobContainerName = blob.BlobContainerName,
+    BlobName = blob.Name,
+    Resource = "b",
+    ExpiresOn = DateTimeOffset.UtcNow.AddMinutes(1)
+};
+
+// Allow read access
+sas.SetPermissions(BlobSasPermissions.Read);
+
+// Authenticate a call to the ToSasQueryParameters method of the BlobSasBuilder object
+StorageSharedKeyCredential storageSharedKeyCredential = new StorageSharedKeyCredential( "AccountName", "AccountKey");
+
+###### Stored access policies
+The stored access policy is created with the following properties:
+- Identifier: The name you use to reference the stored access policy.
+- Start time: A DateTimeOffset value for the date and time when the policy might start to be used. This value can be null.
+- Expiry time: A DateTimeOffset value for the date and time when the policy expires. After this time, requests to the storage will fail with a 403 error-code message.
+- Permissions: The list of permissions as a string that can be one or all of acdlrw.
+
+sasToken = sas.ToSasQueryParameters(storageSharedKeyCredential).ToString();
+```
+
+To reduce the potential risks of using a SAS, Microsoft provides some guidance:
+- To securely distribute a SAS and prevent man-in-the-middle attacks, always use HTTPS.
+- The most secure SAS is a user delegation SAS. Use it wherever possible because it removes the need to store your storage account key in code. You must use Azure AD to manage credentials. This option might not be possible for your solution.
+- Try to set your expiration time to the smallest useful value. If a SAS key becomes compromised, it can be exploited for only a short time.
+- Apply the rule of minimum-required privileges. Only grant the access that's required. For example, in your app, read-only access is sufficient.
+- There are some situations where a SAS isn't the correct solution. When there's an unacceptable risk of using a SAS, create a middle-tier service to manage users and their access to storage.
+
+The C# code in the BlobSasBuilder, including the sas.SetPermissions(), can be replaced with:
+```csharp
+// Create a user SAS that only allows reading for a minute
+BlobSasBuilder sas = new BlobSasBuilder
+{
+    Identifier = "stored access policy identifier"
+};
+```
