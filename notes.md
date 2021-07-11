@@ -3383,3 +3383,49 @@ BlobSasBuilder sas = new BlobSasBuilder
     Identifier = "stored access policy identifier"
 };
 ```
+
+### 3.2 Implement secure cloud solutions {#3.2}
+
+#### Pluralsight notes
+
+##### Implement solutions that interact with Microsoft Graph
+
+Microsoft Graph: gateway to data an intelligence in Microsoft 365, Windows 10 and Enterpise Mobility + Security. It can work with Office 365, Excel, Windows 10, Calendar, Enterprise Mobility + Security, Mail. It provides a unified programming model that you can use to access data in these products through the Microsoft Graph API. More easily said: it allows you to treat Office 365 information as data, query it and write to it.
+
+You can use the REST APIs or SDKs to access the endpoint and build apps that support Microsoft 365 scenarios.
+
+Applications you can use Microsoft Graph:
+- Microsoft 365 core services: Bookings, OneNote, Teams, Outlook and Exchange, OneDrive, SharePoint
+- Enterprise Mobility + Security: Advanced Threat Analytics, Advanced Threat Protection, Azure Active Directory, Identity Manager and Intune.
+- Windows 10 Services: Activities, Devices, Notifications, Universal Print
+- Dynamics 365 Business Central: Management of financial data, Management of projects, Automation and securing of the supply chain, Optimizaion of operations, Sales management, Improved customer service.
+
+Example apps:
+- Looks at youur next meeting and provides profile information of the attendees
+- Scans your calendar,, nd suggests time slots for the next meeting
+- Creates an automated bot for Microsoft Teams
+- Subscribes to changes in your calendar, sends an alert when you're spending too much time in meetings
+
+Microsoft recommends getting a free Microsoft 365 developer subscription by signing up for the Microsoft 365 Developer Program when building applications using Microsoft Graph.
+
+When you build an app that uses Microsoft Graph, you can register the app in your AAD. In the app registrations, under Manage, Authentication, enable allow public client flows. Then, get the app ID and add it in your appsettings.
+
+##### Working with the Azure Key Vault
+
+AKV is an azure service which allows you to securely store and access secrets.
+
+Three types of Azure Key Vault Secrets:
+- Keys
+- Secrets: DB strings, passwords
+- Certificates
+
+Pricing tiers:
+- Standard: software-protected
+- Premium: Standard + HSM-protected
+
+Provisioning AZV:
+- Portal
+- Programatically
+
+Configuring authentication for AKV
+- Use AAD App registration. Register app in AAD, assign permissions to this app registration principal in the Azure Key Vault
