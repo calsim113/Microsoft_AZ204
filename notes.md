@@ -3428,4 +3428,107 @@ Provisioning AZV:
 - Programatically
 
 Configuring authentication for AKV
-- Use AAD App registration. Register app in AAD, assign permissions to this app registration principal in the Azure Key Vault
+- Use AAD App registration. Register app in AAD, assign permissions to this app registration service principal in the Azure Key Vault.
+- Use managed identities. Here, you don't need to store keyvault credentials (e.g. client id, client secret) in the application registration file. Microsoft recommends using managed identities.
+- Use key vault references. Only available if you want to access Azure Key Vault from Azure functions and App services.
+
+Azure key vault references to move app setting values to Azure Key Vault with no additional code. Steps to use Key Vault References:
+1. Move the configuration to Key Vault
+2. Deploy your App Service or Azure Function
+3. Create a system-assigned identity for your App
+4. Give GET KV Secrets access to the app identity
+5. Update the configuration values with the KV reference syntax
+6. Verify your application functionality
+
+There are two types of syntaxes (Could be an exam question):
+- `@Microsoft.KeyVault(VaultName=<vaultname>; SecretName=<secretname>; SecretVersion=<secretversion>)`
+- `@Microsoft.KeyVault(SecretUri=https://<vaultname>.vault.azure.net/secrets/<secretname>/<secretversion>)`
+
+You enable/disable purgeprotection and soft-delete. After you enable purge-protection, you can not delete a soft-deleted secret untill the soft-delete retention period is over.
+
+#### Microsoft Learn
+
+##### Manage secrets in your server apps with Azure Key Vault
+
+Azure Key Vault is a secret store: a centralized cloud service for storing app secrets - configuration values like passwords and connection strings that must remain secure at all times.
+
+The main benefits of using Key Vault are:
+- Separation of sensitive app information from other configuration and code, reducing the risk of accidental leaks
+- Restricted secret access with access policies tailored to the apps and individuals that need them
+- Centralized secret storage, allowing required changes to happen in only one place
+- Access logging and monitoring to help you understand how and when secrets are accessed
+
+Every vault has a unique URL where its API is hosted.
+
+All actions performed on a vault require authentication and authorization — there is no way to grant any kind of anonymous access.
+
+Azure Key Vault uses Azure Active Directory to authenticate users and apps that try to access a vault. To grant our web app access to the vault, we first need to register our app with Azure Active Directory. Registering creates an identity for the app. Once the app has an identity, we can assign vault permissions to it.
+
+Apps and users authenticate to Key Vault using an Azure Active Directory authentication token. Getting a token from Azure Active Directory requires a secret or certificate because anyone with a token could use the app identity to access all of the secrets in the vault.
+
+Our app secrets are secure in the vault, but we still need to keep a secret or certificate outside of the vault to access them! This problem is called the bootstrapping problem, and Azure has a solution for it.
+
+Managed identities for Azure resources is an Azure feature that your app can use to access Key Vault and other Azure services without having to manage even a single secret outside of the vault. Using a managed identity is a simple and secure way to take advantage of Key Vault from your web app.
+
+When you enable managed identity on your web app, Azure activates a separate token-granting REST service specifically for use by your app. Your app will request tokens from this service instead of directly from Azure Active Directory. Your app needs to use a secret to access this service, but that secret is injected into your app's environment variables by App Service when it starts up. You don't need to manage or store this secret value anywhere, and nothing outside of your app can access this secret or the managed identity token service endpoint.
+
+Managed identities for Azure resources also registers your app in Azure Active Directory for you and will delete the registration if you delete the web app or disable its managed identity.
+
+###### Example code
+
+```bash
+az group create --location westeurope --name rg-azurekeyvault-learn
+
+az keyvault create \
+    --resource-group rg-azurekeyvault-learn \
+    --location westeurope \
+    --name learnkeyvault-calibali
+
+az keyvault secret set \
+    --name SecretPassword \
+    --value reindeer_flotilla \
+    --vault-name learnkeyvault-calibali
+```
+
+Then create the app (see cloudshell `~/rg-azurekeyvault-learn`)
+
+```bash
+# Create appservice
+az appservice plan create \
+    --name keyvault-exercise-plan \
+    --sku FREE \
+    --location westeurope \
+    --resource-group rg-azurekeyvault-learn
+
+# Create webapp
+az webapp create \
+    --plan keyvault-exercise-plan \
+    --resource-group rg-azurekeyvault-learn \
+    --name keyvault-demo-app
+
+# Add configuration to the app
+az webapp config appsettings set \
+    --resource-group rg-azurekeyvault-learn \
+    --name keyvault-demo-app \
+    --settings 'VaultName=learnkeyvault-calibali'
+
+# Enable (system) managed identity
+az webapp identity assign \
+    --resource-group rg-azurekeyvault-learn \
+    --name keyvault-demo-app
+
+# Grant acces to the vault
+az keyvault set-policy \
+    --secret-permissions get list \
+    --name learnkeyvault-calibali \
+    --object-id <your-managed-identity-principleid>
+
+# Deploy the app and try it out
+dotnet publish -o pub
+zip -j site.zip pub/*
+
+az webapp deployment source config-zip \
+    --src site.zip \
+    --resource-group rg-azurekeyvault-learn \
+    --name keyvault-demo-app
+```
