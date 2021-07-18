@@ -2,7 +2,7 @@
 Author: Calin Simon
 Date: now
 
-[1 Develop Azure Compute Solutions (25-30%)](#1)  
+[1 Develop Azure Compute Solutions (25-30%)](https://github.com/calsim113/Microsoft_AZ204/blob/master/notes.md#1-develop-azure-compute-solutions-25-30)  
 [1.1 Implement IaaS solutions](#1.1)  
 [1.2 Create Azure App Service Web Apps](#1.2)  
 [1.3 Implement Azure Functions](#1.3)  
