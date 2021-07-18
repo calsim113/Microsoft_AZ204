@@ -3,19 +3,19 @@ Author: Calin Simon
 Date: now
 
 [1 Develop Azure Compute Solutions (25-30%)](https://github.com/calsim113/Microsoft_AZ204/blob/master/notes.md#1-develop-azure-compute-solutions-25-30)  
-[1.1 Implement IaaS solutions](#1.1)  
-[1.2 Create Azure App Service Web Apps](#1.2)  
-[1.3 Implement Azure Functions](#1.3)  
-[2 Develop for Azure Storage (15-20%)](#2)  
-[2.1 Develop solutions that use Cosmos DB storage](#2.1)  
-[2.2 Develop solutions that use blob storage](#2.2)  
-[3 Implement Azure Security (20-25%)](#3)  
-[3.1 Implement user authentication and authorization](#3.1)  
-[3.2 Implement secure cloud solutions](#3.2)  
+[1.1 Implement IaaS solutions](https://github.com/calsim113/Microsoft_AZ204/blob/master/notes.md#11-implement-iaas-solutions)  
+[1.2 Create Azure App Service Web Apps](https://github.com/calsim113/Microsoft_AZ204/blob/master/notes.md#12-create-azure-app-service-web-apps)  
+[1.3 Implement Azure Functions](https://github.com/calsim113/Microsoft_AZ204/blob/master/notes.md#13-implement-azure-functions)  
+[2 Develop for Azure Storage (15-20%)](https://github.com/calsim113/Microsoft_AZ204/blob/master/notes.md#2-develop-for-azure-storage-15-20)  
+[2.1 Develop solutions that use Cosmos DB storage](https://github.com/calsim113/Microsoft_AZ204/blob/master/notes.md#21-develop-solutions-that-use-cosmos-db-storage)  
+[2.2 Develop solutions that use blob storage](https://github.com/calsim113/Microsoft_AZ204/blob/master/notes.md#22-develop-solutions-that-use-blob-storage)  
+[3 Implement Azure Security (20-25%)](https://github.com/calsim113/Microsoft_AZ204/blob/master/notes.md#3-implement-azure-security-20-25)  
+[3.1 Implement user authentication and authorization](https://github.com/calsim113/Microsoft_AZ204/blob/master/notes.md#31-implement-user-authentication-and-authorization)  
+[3.2 Implement secure cloud solutions](https://github.com/calsim113/Microsoft_AZ204/blob/master/notes.md#32-implement-secure-cloud-solutions)  
 
 ## 1 Develop Azure Compute Solutions (25-30%)
 
-### 1.1 Implement IaaS solutions {#1.1}
+### 1.1 Implement IaaS solutions
 
 #### Pluralsight notes
 
