@@ -894,7 +894,7 @@ For ($i = 1; $i -le 3; $i++)
 Execute the script: `./ConferenceDailyReset.ps1 learn-46df0bb4-a295-48ed-a766-316b5c3a81d9`
 Verify: `Get-AzResource -ResourceType Microsoft.Compute/virtualMachines`
 
-### 1.2 Create Azure App Service Web Apps {#1.2}
+### 1.2 Create Azure App Service Web Apps
 
 #### Pluralsight notes
 
@@ -1086,7 +1086,7 @@ Continue Demo:
 7. Modify the project and rebuild with the command from step 2.
 8. Go to the Container Registry resource, click on Webhooks under Services, and select the webhook in the list
 
-### 1.3 Implement Azure Functions {#1.3}
+### 1.3 Implement Azure Functions
 
 #### Pluralsight notes
 
@@ -1553,9 +1553,9 @@ Azure API Management supports importing Azure Function Apps as new APIs or appen
 
 We can also access them both by using the same subscription key, because that key grants access to the API Management gateway. In other Learn modules, you can learn how to apply policies, security settings, external caches, and other features to all the functions in an API Management Gateway. The gateway provides you with a central control point, where you can manage multiple microservices without altering their code.
 
-## 2 Develop for Azure Storage (15-20%) {#2}
+## 2 Develop for Azure Storage (15-20%)
 
-### 2.1 Develop solutions that use Cosmos DB storage {#1.1}
+### 2.1 Develop solutions that use Cosmos DB storage
 
 #### Pluralsight
 
@@ -2632,7 +2632,7 @@ Eventual consistency
 - Azure Cosmos DB accounts that are configured with eventual consistency can associate any number of Azure regions with their Azure Cosmos DB account.
 - The cost of a read operation (in terms of RUs consumed) with the eventual consistency level is the lowest of all the Azure Cosmos DB consistency levels.
 
-### 2.2 Develop solutions that use blob storage {#2.2}
+### 2.2 Develop solutions that use blob storage
 
 #### Pluralsight notes
 
@@ -2814,13 +2814,13 @@ To create a new blob, call one of the `Upload` methods on a reference to a blob 
 
 In the Azure Storage SDK for .NET Core, all methods that require network activity return `Task`s, so make sure you use `await` in your controller methods appropriately.
 
-### 3 Implement Azure Security (20-25%) {#3}
+## 3 Implement Azure Security (20-25%) {#3}
 
-#### 3.1 Implement user authentication and authorization {#3.1}
+### 3.1 Implement user authentication and authorization {#3.1}
 
-##### Pluralsight notes
+#### Pluralsight notes
 
-###### Secure Azure Storage
+##### Secure Azure Storage
 
 Securing Azure Storage in 3 dimensions:
 1. Management plane: user and permission management
@@ -2872,7 +2872,7 @@ Another way to categorize SAS:
 - Ad-hoc SAS: everything you need is inside the token
 - Service SAS: with link to stored access policy
 
-###### Authenticating using Azure AD
+##### Authenticating using Azure AD
 
 The Microsoft Identity Platform:
 - Authentication service
@@ -2915,7 +2915,7 @@ Open ID Connect Tokens
 
 You can register an app with Azure Active Directory. When you go to quickstart from the registered app in the Azure portal, you can create a project that uses Azure Active Directory for the login process.
 
-###### Authorization using Azure AD
+##### Authorization using Azure AD
 
 Authorization = what you can do.
 
@@ -3134,7 +3134,7 @@ Key Vault access has two facets: the management of the Key Vault itself, and acc
 
 You should determine the minimum network access required - for example you can restrict Key Vault endpoints to specific Azure Virtual Network subnets, specific IP addresses, or trusted Microsoft services including Azure SQL, Azure App Service, and various data and storage services that use encryption keys.
 
-###### Certificates
+####### Certificates
 
 First, you can create self-signed certificates directly in the Azure portal. This process creates a public/private key pair and signs the certificate with its own key. These certificates can be used for testing and development.
 
@@ -3199,7 +3199,7 @@ The most secure and convenient way to handle authentication within Azure is to u
 	
 Azure Resource Manager is called when an application passes a token to Azure. Azure Resource Manager is the framework that a custom application uses to connect or authenticate to Azure resources.
 
-###### Managed identities
+####### Managed identities
 
 Azure managed identity is a feature of Azure Active Directory (Azure AD) that you can use free of charge. This feature automatically creates identities to allow apps to authenticate with Azure resources and services. To use managed identities, you don't need to provide authentication credentials in code. The managed identity feature solves the credential problem by granting an automatically managed identity.
 
@@ -3300,6 +3300,7 @@ Using the DefaultAzureCredential provider as follows, we can authenticate with a
 var client = new SecretClient(new Uri(keyVaultUrl), new DefaultAzureCredential());
 KeyVaultSecret secretWithValue = await client.GetSecretAsync(secret.Name).ConfigureAwait(false);
 ```
+
 ##### Control access to Azure Storage with shared access signatures
 
 Four security options are available for blob storage:
@@ -3384,7 +3385,7 @@ BlobSasBuilder sas = new BlobSasBuilder
 };
 ```
 
-### 3.2 Implement secure cloud solutions {#3.2}
+### 3.2 Implement secure cloud solutions
 
 #### Pluralsight notes
 
