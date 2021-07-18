@@ -13,7 +13,7 @@ Date: now
 [3.1 Implement user authentication and authorization](#3.1)  
 [3.2 Implement secure cloud solutions](#3.2)  
 
-## 1 Develop Azure Compute Solutions (25-30%) {#1}
+## 1 Develop Azure Compute Solutions (25-30%)
 
 ### 1.1 Implement IaaS solutions {#1.1}
 
