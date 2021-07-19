@@ -2823,7 +2823,7 @@ In the Azure Storage SDK for .NET Core, all methods that require network activit
 
 ## 3 Implement Azure Security (20-25%)
 
-### 3.1 Implement user authentication and authorization {#3.1}
+### 3.1 Implement user authentication and authorization
 
 #### Pluralsight notes
 
