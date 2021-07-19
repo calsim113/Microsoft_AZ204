@@ -2821,7 +2821,7 @@ To create a new blob, call one of the `Upload` methods on a reference to a blob 
 
 In the Azure Storage SDK for .NET Core, all methods that require network activity return `Task`s, so make sure you use `await` in your controller methods appropriately.
 
-## 3 Implement Azure Security (20-25%) {#3}
+## 3 Implement Azure Security (20-25%)
 
 ### 3.1 Implement user authentication and authorization {#3.1}
 
