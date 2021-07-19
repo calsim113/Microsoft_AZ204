@@ -12,6 +12,13 @@ Date: now
 [3 Implement Azure Security (20-25%)](https://github.com/calsim113/Microsoft_AZ204/blob/master/notes.md#3-implement-azure-security-20-25)  
 [3.1 Implement user authentication and authorization](https://github.com/calsim113/Microsoft_AZ204/blob/master/notes.md#31-implement-user-authentication-and-authorization)  
 [3.2 Implement secure cloud solutions](https://github.com/calsim113/Microsoft_AZ204/blob/master/notes.md#32-implement-secure-cloud-solutions)  
+[4 Monitor, troubleshoot, and optimise Azure solutions (15-20%)](https://github.com/calsim113/Microsoft_AZ204/blob/master/notes.md#4-monitor-troubleshoot-and-optimise-azure-solutions-15-20)
+[4.1 Integrate caching and content delivery within solutions](https://github.com/calsim113/Microsoft_AZ204/blob/master/notes.md#41-integrate-caching-and-content-delivery-within-solutions)
+[4.2 Instrument solutions to support monitoring and logging](https://github.com/calsim113/Microsoft_AZ204/blob/master/notes.md#42-instrument-solutions-to-support-monitoring-and-logging)
+[5 Connect to and consume Azure services and third-party services (15-20%)](https://github.com/calsim113/Microsoft_AZ204/blob/master/notes.md#5-connect-to-and-consume-azure-services-and-third-party-services-15-20)
+[5.1 Implement API Management](https://github.com/calsim113/Microsoft_AZ204/blob/master/notes.md#51-implement-api-management)
+[5.2 Develop event-based solutions](https://github.com/calsim113/Microsoft_AZ204/blob/master/notes.md#52-develop-event-based-solutions)
+[5.3 Develop message-based solutions](https://github.com/calsim113/Microsoft_AZ204/blob/master/notes.md#53-develop-message-based-solutions)
 
 ## 1 Develop Azure Compute Solutions (25-30%)
 
@@ -3533,3 +3540,21 @@ az webapp deployment source config-zip \
     --resource-group rg-azurekeyvault-learn \
     --name keyvault-demo-app
 ```
+
+##### Configure and manage secrets in Azure Key Vault
+
+Done
+
+## 4 Monitor, troubleshoot, and optimise Azure solutions (15-20%)
+
+### 4.1 Integrate caching and content delivery within solutions
+
+### 4.2 Instrument solutions to support monitoring and logging
+
+## 5 Connect to and consume Azure services and third-party services (15-20%)
+
+### 5.1 Implement API Management
+
+### 5.2 Develop event-based solutions
+
+### 5.3 Develop message-based solutions
