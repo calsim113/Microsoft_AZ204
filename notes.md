@@ -3549,6 +3549,55 @@ Done
 
 ### 4.1 Integrate caching and content delivery within solutions
 
+#### Pluralsight
+
+##### Configuring Cache and Experiation Policies in Azure CDN
+
+A content delivery network (CDN) is a distributed network of servers that can efficiently deliver web content to users. CDNs' store cached content on edge servers in point-of-presence (POP) locations that are close to end users, to minimize latency.
+
+How it works
+1. A user (Alice) requests a file (also called an asset) by using a URL with a special domain name, such as <endpoint name>.azureedge.net. This name can be an endpoint hostname or a custom domain. The DNS routes the request to the best performing POP location, which is usually the POP that is geographically closest to the user.
+2. If no edge servers in the POP have the file in their cache, the POP requests the file from the origin server. The origin server can be an Azure Web App, Azure Cloud Service, Azure Storage account, or any publicly accessible web server.
+3. The origin server returns the file to an edge server in the POP.
+4. An edge server in the POP caches the file and returns the file to the original requestor (Alice). The file remains cached on the edge server in the POP until the time-to-live (TTL) specified by its HTTP headers expires. If the origin server didn't specify a TTL, the default TTL is seven days.
+5. Additional users can then request the same file by using the same URL that Alice used, and can also be directed to the same POP.
+6. If the TTL for the file hasn't expired, the POP edge server returns the file directly from the cache. This process results in a faster, more responsive user experience.
+
+Example from pluralsight:  
+First, make a web app, then make a CDN profile. From the CDN profile, add an Endpoint. Give a globally unique endpoint name, specify the origin type (in this case Web App), then specify the origin hostname. For origin path, type the path that the application you need to include in the CDN, for origin host header, enter the URL for your web application. After deployment, you can access the page via the CDN Endpoint.
+
+What is a CDN:
+- Globally distributed network
+- Reduced asset load times
+- Reduced hosting bandwidth
+- Increased availability and redundancy
+- Protection from DDOS
+
+Content types:
+- Static content: images, css files, js files
+- Dynamic content: changes on user interation, dashboards, query results
+
+Content distribution:
+- You can use CDN to distribute static contents
+
+Request and response lifecycle, see above 'How it works'
+
+Caching rules. You probably want to apply different rules to differen file-types. There are three types of caching rules available within Azure CDN. These are only available with Azure CDN Standard (Verizon) and Azure CDN Standard (Akamai). If you use the Azure CDN (Microsoft), you need to use the Standard rules engine. If you use the Azure CDN Premium (Verizon), you need to use the Verizon Premium engine. For the exam, you should only be concerned with the Azure CDN Standard (Verizon or Akamai).
+
+Caching rules:
+- Global caching rules
+    - Only one global caching rule per endpoint
+    - Override cache headers
+- Custom caching rules
+    - One or many rules: specify caching behaviour on extension or path
+    - Override global rule
+- Query string caching rules
+    - Control how requests that contain query strings are cached
+    - 3 rules:
+        - Ignore query strings (default): CDN gets the assets for that query string, and then caches the assets for subsequent similar query strings.
+        - Bypass query strings: no caching
+        - Cache every unique URL (including query string)
+
 ### 4.2 Instrument solutions to support monitoring and logging
 
 ## 5 Connect to and consume Azure services and third-party services (15-20%)
