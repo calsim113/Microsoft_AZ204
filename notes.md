@@ -3705,6 +3705,101 @@ Data encryption in Azure Redis Cache.
 	
 ### 4.2 Instrument solutions to support monitoring and logging
 
+#### Pluralsight
+
+##### Introduction to Azure Monitor and Application Insights
+
+Azure monitor structure. Different sources (application, Azure resources, Azure subscription, Azure tenant, OS, Custom sources) send their information to Azure Monitor where the data is collected in two data stores: Metrics and Logs. Azure Monitor has different functions that perform operations on these data stores: Insights, Visualize, Analyze, Respond, Integrate.
+
+The two fundament types:
+- Metrics: numerical values that descibe some aspect of a system at a particular time. (CPU or memory usage)
+- Logs: events that occurred within the system, structured or free form text with a timestamp. (Exception thrown during application execution).
+
+Azure Monitor capabilities:
+- Correlate infrastructure issues, e.g. detect that there is not enough memory available for the VMs.
+- Detect and diagnose issues across applications and dependencies.
+- Support operations with smart alerts and automated actions.
+- Create visualizations with Azure dashboards and workbooks
+
+What data does Azure Monitor Collect?
+- Data about performance and functionality of the application's source code
+- Data about the operating system on which your application is running
+- Data about the operation of an Azure resources
+- Data about the operation of tenant-level Azure services, such as AAD
+
+Azure Monitor can collect log data from any REST client, what allows to create custom monitoring scenarios, including on-premises solutions.
+
+What is azure application insights?
+- Application Insights is an extensible Application Performance Management (APM) service for developers and DevOps professionals
+- It is a part of the Azure Monitor
+
+Say you have a full-stack app with a web app, web api, database, and possibly an external system. You can connect these components to one Application Insights instance and use tools such as Power BI for visualiations, use the REST API, or use Visual Studio.
+
+Application Insights Capabilities:
+- Check performance of server machines like CPU or memory usage
+- Detect thrown exceptions in the application's source code
+- Add custom events and metrics in the client or server code, to track business events
+- Collect requests rates, response times, and failure rates
+- Collect page views and laod performance - reported by the users's browser
+
+Application Insights SDks
+- ASP.NET
+- Node.JS
+- ASP.NET Core
+- React
+- Java EE
+- Python
+
+For mobile and desktop applications, there is Visual Studio App Center Diagnostics, that enables you to export the data from mobile and desktop apps to Application Insights.
+
+How can I see collected telemetry from my applications (in Application Insights)?
+- Smart detections: automatically warns you of potential performance problems and failure anomalies in your web applications
+- Application Map: helps spot performance bottlenecks or failure hotspots across all components fo the distributed application
+- Live Metrics: provides real time information about application performance
+- Failure: provides details about issues detected inside your applications like exceptions and server errors
+
+In your ASP.NET project, first add the `Microsoft.ApplicationInsights.AspNetCore`. Then in the start-up class you need to add `.AddApplicationInsightsTelemetry()` to the services instance. Finally add the instrumentationkey to the settings.
+
+##### Implement alerts and handle transient faults
+
+With Azure Application Web Tests, you can set up recurring tests to monitor availability and responsiveness of your web apps and web services.
+
+Types of availability tests:
+- URL ping test: a single URL test that you can create in the Azure portal
+- Custom Track Availability Tests: send information about availability of an application using TrackAvailability() method from the SDK
+- Multi-step web test: a recording of a sequence of web requests, which can be played back to test more compolex scenarios
+
+Azure Application Insights can alert you if your application isn't responding, or if it responds too slowly during availability tests. To enable this, selecte Availability in the side menu, under Investigate, and Add Test.
+- Parse dependent requests: add for example a minimum time the request should take to get all files
+- Enable retries: make 3 retries. If no succes, then failure.
+- Select succes criteria
+- Add content match if you want
+- Add alerts: you can configure the signal logic
+    - Add action group (email, phone, etc)
+
+Transient faults include the momentary loss of network connectivity to components and services, the temporary unavailability of a service, or timteouts that arise when a service is busy.
+
+Transient fault challenges
+- The application must be able to detect faults when they occur, and determin if these faults are likely to be transient
+- The application must be able to retry the operation if it determines that the fault is likely to be transient
+- The application must use an appropriate strategy for the retries. This strategy specifies the number of times it should retry
+
+Resiliency in the source code
+- Polly, an open-source library from the NuGet package manager
+    - Retry
+        - Send the request to the sepcific service again, after some time
+        - Wait before sending the next request
+        - Configure retry times and time interval between requests
+    - Timeout
+    - Circuit breaker policy
+        - Service is unavailable and cannot respond to a request
+        - Avoid sending request for some time
+        - When the circuit is opened, no request is sent until it is closed again
+
+ 
+
+
+
 ## 5 Connect to and consume Azure services and third-party services (15-20%)
 
 ### 5.1 Implement API Management
