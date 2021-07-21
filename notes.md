@@ -3556,12 +3556,12 @@ Done
 A content delivery network (CDN) is a distributed network of servers that can efficiently deliver web content to users. CDNs' store cached content on edge servers in point-of-presence (POP) locations that are close to end users, to minimize latency.
 
 How it works
-1. A user (Alice) requests a file (also called an asset) by using a URL with a special domain name, such as <endpoint name>.azureedge.net. This name can be an endpoint hostname or a custom domain. The DNS routes the request to the best performing POP location, which is usually the POP that is geographically closest to the user.
-2. If no edge servers in the POP have the file in their cache, the POP requests the file from the origin server. The origin server can be an Azure Web App, Azure Cloud Service, Azure Storage account, or any publicly accessible web server.
-3. The origin server returns the file to an edge server in the POP.
-4. An edge server in the POP caches the file and returns the file to the original requestor (Alice). The file remains cached on the edge server in the POP until the time-to-live (TTL) specified by its HTTP headers expires. If the origin server didn't specify a TTL, the default TTL is seven days.
-5. Additional users can then request the same file by using the same URL that Alice used, and can also be directed to the same POP.
-6. If the TTL for the file hasn't expired, the POP edge server returns the file directly from the cache. This process results in a faster, more responsive user experience.
+1. A user (Alice) requests a file (also called an asset) by using a URL with a special domain name, such as [endpoint name].azureedge.net . This name can be an endpoint hostname or a custom domain. The DNS routes the request to the best performing POP location, which is usually the POP that is geographically closest to the user.  
+3. If no edge servers in the POP have the file in their cache, the POP requests the file from the origin server. The origin server can be an Azure Web App, Azure Cloud Service, Azure Storage account, or any publicly accessible web server.
+4. The origin server returns the file to an edge server in the POP.
+5. An edge server in the POP caches the file and returns the file to the original requestor (Alice). The file remains cached on the edge server in the POP until the time-to-live (TTL) specified by its HTTP headers expires. If the origin server didn't specify a TTL, the default TTL is seven days.
+6. Additional users can then request the same file by using the same URL that Alice used, and can also be directed to the same POP.
+7. If the TTL for the file hasn't expired, the POP edge server returns the file directly from the cache. This process results in a faster, more responsive user experience.
 
 Example from pluralsight:  
 First, make a web app, then make a CDN profile. From the CDN profile, add an Endpoint. Give a globally unique endpoint name, specify the origin type (in this case Web App), then specify the origin hostname. For origin path, type the path that the application you need to include in the CDN, for origin host header, enter the URL for your web application. After deployment, you can access the page via the CDN Endpoint.
@@ -3590,7 +3590,7 @@ Caching rules:
     - Override cache headers
 - Custom caching rules
     - One or many rules: specify caching behaviour on extension or path
-    - Override global rule
+    - Override global rule 
 - Query string caching rules
     - Control how requests that contain query strings are cached
     - 3 rules:
@@ -3598,6 +3598,104 @@ Caching rules:
         - Bypass query strings: no caching
         - Cache every unique URL (including query string)
 
+##### Configuring Cache and Experiation Policies for Azure Redis Cache
+
+Azure Redis Cache is a Microsoft implementation of the open source Redis Cache. Redis cache not only operates as an in-memory database, but can also operate as a database cache and even a message broker. Azure Redis Cache has 5 pricing Tiers, from which three are important and will be in the exam, plus 2 advanced ones.
+1. Basic: 
+	- minimal feature se
+	- no SLA
+	- good for development and test
+	- Up to 53 GB of memory with up to 20k connections
+2. Standard
+	- 2 replicated nodes
+	- 99.9% availbility
+	- 53 gb of memory
+	- 20k clients
+3. Premium
+	- Redis cluster
+	- Low latency and high throughput
+	- 99.95% availability
+	- 100 GB memory
+	- 40k connected clients
+4. Enterprise
+	- Full Redis feature set
+	- 99.99% availability
+5. Enterprise flash
+	- Add fast non-volatile storage
+
+You can scale up the tiers, but you can't scale down your current tier to a lower one.
+
+Understand caching:
+- Improve performance and scalability
+- Move frequently accessed data closer on fast storage
+- Faster response times
+
+When should we cache?
+- Repeatedly accessed data, especially if the data is not changed.
+- Data source performance: reading data from cache is faster than performing SQL operations on the server
+- Data contention: when multiple systems are requesting the same data
+- Physical location to reduce network latency
+
+Managing lifetime in Redis Cache:
+- No default expiration, content exists until it's removed
+- Must set TTL manually
+
+Calculating cache duration
+- Rate of change
+	- Long expiry for static data
+	- Short expiry for volatile data
+- Risk of outdate data
+	- Lower TTl to match data change
+
+Setting expiration times for Redis Cache: `_cache.StringSet("myKey", "my Value", new TimeSpan(3, 0, 0))`, for TTL of 3 hours.
+
+To use Redis Cache in a .NET project, use the StackExchange.Redis NuGet package. Add the CacheConnectionstring to appsettings, so you can perform actions on the Redis Cache.
+
+Best practices for Redis Cache:
+- Watch out for data loss, since it is an in memory database
+- Set expiry times to manage content lifetime
+- Add jitter to TTL to vary the expiry time, which spreds database load
+- Avoid caching large objects
+- Host Redis in the same region as your application runs
+
+##### Implement application caching patterns
+
+The benefits of caching:
+- Performance
+- Scalability, reduce low long key components in your applications such as servers and databases
+- Resilience
+
+Common caching patterns (that are likely in the exam):
+- Cache-aside pattern: store frequently accessed data in Redis Cache
+	1. Does the data exist in cache?
+	2. If not, retrieve from the data store
+	3. Store a copy in the cache
+- Content cache pattern
+	- Cache static content (images, templates, style sheets)
+	- Reduces server load
+	- Redis output cache provider for ASP.NET
+- User session caching pattern
+	- Maintain application state (e.g. shopping cart)
+	- Done with session cookies or local storage
+		- limited data storage
+		- slow performance
+	- Solution: store data in redis cache and keep a reference/pointer in the session cookie
+- Advanced patterns:
+	- Job and message queueing
+	- Distributed transactions
+
+Configuring Redis Cache for optimal size and performance.
+- Estimating the cache size:
+	- Number of concurrent cached objects
+	- Size of cached objects
+		- An ampty instance typically uses 3 mb of RAM
+	- Number of cache requests
+		- C3 (pricing tier) Redis Cache can proces up to 100.000 requests per second. 90.000 over SSL.
+	- Cache expiration policy
+		- Think of the Cache Hit Ratio: number of cache requests that return a repsonse.
+- Test with Redis Benchmark Utility: `Redis-benchmark -q -n 100000`. Cannot run from the Azure portal, better to create a virtual machine and test from there.
+	
+	
 ### 4.2 Instrument solutions to support monitoring and logging
 
 ## 5 Connect to and consume Azure services and third-party services (15-20%)
