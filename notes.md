@@ -3694,7 +3694,14 @@ Configuring Redis Cache for optimal size and performance.
 	- Cache expiration policy
 		- Think of the Cache Hit Ratio: number of cache requests that return a repsonse.
 - Test with Redis Benchmark Utility: `Redis-benchmark -q -n 100000`. Cannot run from the Azure portal, better to create a virtual machine and test from there.
-	
+
+Data encryption in Azure Redis Cache.
+- Encryption in transit
+	- Use TLS 1.2
+	- HTTP connections disabled by default
+- Encryption at rest
+	- In memory data is not encrypted
+	- With premium Tiers you can enable data persistence, which allow you to keep a back-up on a database, which is then encrypted at rest.
 	
 ### 4.2 Instrument solutions to support monitoring and logging
 
