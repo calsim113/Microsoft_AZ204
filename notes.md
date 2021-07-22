@@ -3607,11 +3607,12 @@ Azure Redis Cache is a Microsoft implementation of the open source Redis Cache. 
 	- good for development and test
 	- Up to 53 GB of memory with up to 20k connections
 2. Standard
-	- 2 replicated nodes
+	- 2 replicated nodes (VMs)
 	- 99.9% availbility
 	- 53 gb of memory
 	- 20k clients
 3. Premium
+	- More powerful VMs
 	- Redis cluster
 	- Low latency and high throughput
 	- 99.95% availability
@@ -3702,8 +3703,28 @@ Data encryption in Azure Redis Cache.
 - Encryption at rest
 	- In memory data is not encrypted
 	- With premium Tiers you can enable data persistence, which allow you to keep a back-up on a database, which is then encrypted at rest.
+
+#### Microsoft Learn
+
+##### Introduction to Azure Cache for Redis
+
+Azure Cache for Redis can help improve performance in apps that interface with many database solutions, including Azure SQL Database, Azure Cosmos DB, and Azure Database for MySQL.
+
+learn what the following Azure Cache for Redis use-cases provide:
+- Distributed cache: the distributed cache use-case in Azure Cache for Redis helps improve your apps' response times by copying frequently-accessed data to a cache.
+- Session store: your session-oriented apps require the ability to store and access temporary session data when users sign in and remain active on your apps. The session store use-case in Azure Cache for Redis:
+	- Manages up to hundreds of thousands of simultaneous users.
+	- Makes data-replication options available to help provide for maximum reliability.
+	- Helps reduce costs, as it's typically more cost-effective and scalable than alternative database or storage options.
+- Message broker: Azure Cache for Redis can implement a publish/subscribe or queue architecture that can help enable fast and reliable communication between these microservices. The Azure Cache for Redis message broker:
+	- Provides a temporary data store with minimal overhead and cost.
+	- Supports TLS encryption for data in transit.
+	- Provides network isolation for secure communication between your services.
+- Cloud migration
 	
 ### 4.2 Instrument solutions to support monitoring and logging
+
+
 
 #### Pluralsight
 
