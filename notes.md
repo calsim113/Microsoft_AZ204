@@ -3720,11 +3720,192 @@ learn what the following Azure Cache for Redis use-cases provide:
 	- Provides a temporary data store with minimal overhead and cost.
 	- Supports TLS encryption for data in transit.
 	- Provides network isolation for secure communication between your services.
-- Cloud migration
-	
+- Cloud migration: A typical process proceeds as follows:
+    - From an existing on-premises Redis cache, you export the cache to an RDB file.
+    - You create an Azure Cache for Redis instance.
+    - Next, you import the RDB into this instance.
+    - Finally, you configure your new application to point to your Azure Cache for Redis instance.
+
+Consider implementing Azure Cache for Redis when you:
+- Want to implement an app-caching solution that's based on industry standard technologies.
+- Don't want to worry about underlying VMs or infrastructure and want the simplicity of a fully managed service.
+- Consider high availability critical to your organization's business goals.
+- Want a system that can respond automatically to both anticipated and unanticipated changes in demand.
+- Need the same performance and scaling benefits throughout the world.
+
+When you're deciding which tier to select, you should choose the:
+- Basic tiers only for noncritical workloads.
+- Standard tiers only for general purpose workloads
+- Premium or Enterprise tiers when you require more performance.
+- Enterprise tiers when you:
+    - Need higher availability than the Premium tier offers.
+    - Require Active geo-replication, RedisBloom, RediSearch, and RedisTimeSeries module integration.
+- Enterprise Flash tier when you want to reduce costs by using nonvolatile memory.
+
+##### Optimize your web applications by caching read-only data with Redis
+
+What is caching? Caching is the act of storing frequently accessed data in memory that is very close to the application that consumes the data.
+
+What is Azure Cache for Redis? Azure Cache for Redis is based on the popular open-source Redis cache. It gives you access to a secure, dedicated Redis cache, managed by Microsoft. A cache created using Azure Cache for Redis is accessible from any application within Azure.
+
+What type of data can be stored in the cache? Redis supports a variety of data types all oriented around binary safe strings. This means that you can use any binary sequence for a value, from a string like "i-love-rocky-road" to the contents of an image file. An empty string is also a valid value.
+- Binary-safe strings (most common)
+- Lists of strings
+- Unordered sets of strings
+- Hashes
+- Sorted sets of strings
+- Maps of strings
+
+What is a Redis key? Each data value is associated to a key that can be used to look up the value from the cache. Redis keys are also binary safe strings. Here are some guidelines for choosing keys:
+- Avoid long keys. They take up more memory and require longer lookup times because they have to be compared byte-by-byte.
+- Use keys that can identify the data. For example, "sport:football;date:2008-02-02" would be a better key than "fb:8-2-2". The former is more readable and the extra size is negligible. Find the balance between size and readability.
+- Use a convention. A good one is "object:id", as in "sport:football".
+
+How is data stored in a Redis cache?
+- Data in Redis is stored in nodes and clusters.
+- Nodes are a space in Redis where your data is stored.
+- Clusters are sets of three or more nodes your dataset is split across. Clusters are useful because your operations will continue if a node fails or is unable to communicate to the rest of the cluster.
+
+Redis supports a set of known commands. A command is typically issued as `COMMAND parameter1 parameter2 parameter3`.
+
+Here are some common commands you can use:
+
+| Command | Description |
+| ------- | ----------- |
+| `ping` | Ping the server. Returns "PONG". | 
+| `set [key] [value]` |	Sets a key/value in the cache. Returns "OK" on success.| 
+| `get [key]` | Gets a value from the cache. | 
+| `exists [key]` | Returns '1' if the key exists in the cache, '0' if it doesn't.| 
+| `type [key]` | Returns the type associated to the value for the given key.| 
+| `incr [key]` | Increment the given value associated with key by '1'. The value must be an integer or double value. This returns the new value. | 
+| `incrby [key] [amount]` | Increment the given value associated with key by the specified amount. The value must be an integer or double value. This returns the new value. | 
+| `del [key]` | Deletes the value associated with the key. | 
+| `flushdb` | Delete all keys and values in the database. | 
+
+Adding an expiration time to values:
+```bash
+> set counter 100
+OK
+> expire counter 5
+(integer) 1
+> get counter
+100
+... wait ...
+> get counter
+(nil)
+```
+
+To connect to an Azure Cache for Redis instance, you'll need several pieces of information. Clients need the host name, port, and an access key for the cache. You can retrieve this information in the Azure portal through the Settings > Access Keys page.
+- The host name is the public Internet address of your cache, which was created using the name of the cache. For example sportsresults.redis.cache.windows.net.
+- The access key acts as a password for your cache. There are two keys created: primary and secondary.
+
+ecall that we use the host address, port number, and an access key to connect to a Redis server. Azure also offers a connection string for some Redis clients which bundles this data together into a single string: `[cache-name].redis.cache.windows.net:6380,password=[password-here],ssl=True,abortConnect=False`.
+
+Notice that there are two additional parameters at the end:
+- ssl - ensures that communication is encrypted.
+- abortConnection - allows a connection to be created even if the server is unavailable at that moment.
+
+The main connection object in StackExchange.Redis is the `StackExchange.Redis.ConnectionMultiplexer class`.
+```csharp
+using StackExchange.Redis;
+...
+var connectionString = "[cache-name].redis.cache.windows.net:6380,password=[password-here],ssl=True,abortConnect=False";
+var redisConnection = ConnectionMultiplexer.Connect(connectionString);
+    // ^^^ store and re-use this!!!
+
+IDatabase db = redisConnection.GetDatabase();
+
+bool wasSet = db.StringSet("favorite:flavor", "i-love-rocky-road");
+
+string value = db.StringGet("favorite:flavor");
+Console.WriteLine(value); // displays: ""i-love-rocky-road""
+
+// Recall that Redis keys and values are binary safe. These same methods can be used to store binary data. There are implicit conversion operators to work with byte[] types so you can work with the data naturally:
+
+byte[] key = ...;
+byte[] value = ...;
+
+db.StringSet(key, value);
+
+byte[] key = ...;
+byte[] value = db.StringGet(key);
+```
+
+Other common operations
+
+|Method|	Description|
+| ---- | --------------|
+|`CreateBatch`|	Creates a group of operations that will be sent to the server as a single unit, but not necessarily processed as a unit.|
+|`CreateTransaction`|	Creates a group of operations that will be sent to the server as a single unit and processed on the server as a single unit.|
+|`KeyDelete`|	Delete the key/value.|
+|`KeyExists`|	Returns whether the given key exists in cache.|
+|`KeyExpire`|	Sets a time-to-live (TTL) expiration on a key.|
+|`KeyRename`|	Renames a key.|
+|`KeyTimeToLive`|	Returns the TTL for a key.|
+|`KeyType`|	Returns the string representation of the type of the value stored at key. The different types that can be returned are: string, list, set, zset and hash.|
+
+The IDatabase object has an Execute and ExecuteAsync method which can be used to pass textual commands to the Redis server. For example:
+```csharp
+var result = db.Execute("ping");
+Console.WriteLine(result.ToString()); // displays: "PONG"
+```
+
+```csharp
+var result = await db.ExecuteAsync("client", "list");
+Console.WriteLine($"Type = {result.Type}\r\nResult = {result}");
+```
+
+Redis is oriented around binary safe strings, but you can cache off object graphs by serializing them to a textual format - typically XML or JSON. For example, perhaps for our statistics, we have a GameStats object which looks like:
+```csharp
+public class GameStat
+{
+    public string Id { get; set; }
+    public string Sport { get; set; }
+    public DateTimeOffset DatePlayed { get; set; }
+    public string Game { get; set; }
+    public IReadOnlyList<string> Teams { get; set; }
+    public IReadOnlyList<(string team, int score)> Results { get; set; }
+
+    public GameStat(string sport, DateTimeOffset datePlayed, string game, string[] teams, IEnumerable<(string team, int score)> results)
+    {
+        Id = Guid.NewGuid().ToString();
+        Sport = sport;
+        DatePlayed = datePlayed;
+        Game = game;
+        Teams = teams.ToList();
+        Results = results.ToList();
+    }
+
+    public override string ToString()
+    {
+        return $"{Sport} {Game} played on {DatePlayed.Date.ToShortDateString()} - " +
+               $"{String.Join(',', Teams)}\r\n\t" + 
+               $"{String.Join('\t', Results.Select(r => $"{r.team } - {r.score}\r\n"))}";
+    }
+}
+```
+We could use the Newtonsoft.Json library to turn an instance of this object into a string:
+```csharp
+var stat = new GameStat("Soccer", new DateTime(1950, 7, 16), "FIFA World Cup", 
+                new[] { "Uruguay", "Brazil" },
+                new[] { ("Uruguay", 2), ("Brazil", 1) });
+
+string serializedValue = Newtonsoft.Json.JsonConvert.SerializeObject(stat);
+bool added = db.StringSet("event:1950-world-cup", serializedValue);
+```
+We could retrieve it and turn it back into an object using the reverse process:
+```csharp
+var result = db.StringGet("event:1950-world-cup");
+var stat = Newtonsoft.Json.JsonConvert.DeserializeObject<GameStat>(result.ToString());
+Console.WriteLine(stat.Sport); // displays "Soccer"
+```
+Once you are done with the Redis connection, you can Dispose the ConnectionMultiplexer. This will close all connections and shutdown the communication to the server.
+```
+redisConnection.Dispose();
+redisConnection = null;
+```
+
 ### 4.2 Instrument solutions to support monitoring and logging
-
-
 
 #### Pluralsight
 
@@ -3817,9 +3998,44 @@ Resiliency in the source code
         - Avoid sending request for some time
         - When the circuit is opened, no request is sent until it is closed again
 
- 
+#### Microsoft Learn
 
+##### Capture and view page load times in your Azure web app with Application Insights
 
+Application Insights is an Azure service that helps you to monitor the performance and behavior of web applications. Each Application Insights resource you create is a repository for application telemetry data. There are two ways to configure your app to send data to Application Insights:
+- Runtime instrumentation: Runtime instrumentation captures telemetry without requiring you to change the web app's source code. You can quickly enable this turnkey solution from the Azure portal when you first create your web app or anytime afterwards.
+- Build-time instrumentation. With this method, developers add a server-side SDK to the web app's code. For example, in an ASP.NET Core app, a developer could reference a NuGet package to access the SDK.
+
+You can enable client-side instrumentation for an app by including a standard Application Insights JavaScript library in pages delivered to your app's users. Client-side instrumentation captures information about the user experience of the app, including page load times, details of browser exceptions, and performance data about AJAX calls.
+
+There are several tools you can use to display that data:
+- The Azure portal.
+- Power BI.
+- Visual Studio.
+- Custom tools.
+
+When you enable runtime instrumentation in a web app, a link appears in the Azure portal that takes you from the web app resource to the Application Insights resource that receives the data. Another way to view the Application Insights dashboard is to select Dashboard from the Azure portal menu.
+
+When you make changes to a dashboard in Azure, other dashboard users won't see the changes until you publish them.
+
+##### Monitor performance of virtual machines by using Azure Monitor VM Insights
+
+Azure Monitor Logs collects and organizes log data generated from Azure resources. Log data is stored in a Log Analytics workspace. Data living in the workspace can be queried for trend analysis, reporting, and alerting. Some examples of data captured include Windows event logs, Heartbeat logs, performance data, and Syslogs.
+
+Azure Monitor VM Insights is a feature of Azure Monitor that relies on Azure Monitor Logs. Think of Azure Monitor VM Insights as a feature that provides a predefined, curated monitoring experience, with little configuration required. Azure Monitor VM Insights use a table named InsightsMetrics.
+
+There are a few different resources and services that complete the native monitoring toolkit in Azure. Azure Monitor becomes the service at the top, which spans across all monitoring tools, while everything else lives underneath. The service collects and analyzes data generated from Azure resources. Azure Monitor captures monitoring data from the following sources:
+- Application
+- Guest OS
+- Azure resources
+- Azure subscriptions
+- Azure tenant
+
+Data collected by Azure Monitor is composed of metrics in Azure Monitor Metrics and logs in Azure Monitor Logs. Azure Monitor Metrics are lightweight numerical values stored in a time-series database that can be used for near real time alerting. Some examples of metrics captured include IOPS percentages and CPU cycles.
+
+As we covered earlier, Azure Monitor Logs collects and organizes log data from Azure resources. The major difference between Azure Monitor Metrics and Azure Monitor Logs is the structure of data generated. Azure Monitor Metrics only store numeric data using a specific structure. Azure Monitor Logs can store Azure Monitor Metrics data and various other data types, each using their own structure.
+
+In addition to logs and metrics, Azure resources also emit Azure platform logs, which are collected by Azure Monitor. Platform logs provide comprehensive diagnostic and auditing information for Azure resources and the underlying Azure platform. Platform logs are resource logs (formerly known as diagnostic logs), activity logs, and Azure Active Directory logs
 
 ## 5 Connect to and consume Azure services and third-party services (15-20%)
 
