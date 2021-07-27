@@ -4041,6 +4041,181 @@ In addition to logs and metrics, Azure resources also emit Azure platform logs, 
 
 ### 5.1 Implement API Management
 
+#### Pluralsight
+
+##### Implement API Management
+
+Azure API management is an Azure service to create consistent and modern API gateways for existing back-end services. It provides secure, scalable API access for your applications.
+
+Components:
+1. API gateway: accepts API calls and routes them to your backends
+2. Azure portal: the administrative interface where you set up your API program
+3. Developer porta: web user interface for developers where they can read API documentation
+
+API gateway capabilites:
+- Accepts API calls and routes them to your backends
+- Verifies API keys, JWT tokens, certificates, and other credentials
+- Enforces usage quotas and rate limits
+- Caches backend responses
+
+Azure portal capabilities:
+- Define or import API schema
+- Set up policies like quotas or transformations on the APIs
+- Package APIs into products
+- Manage users
+
+Developer portal capabilities:
+- Read API documentation
+- Create an account and subscrite to get API keys
+- Try out an API via the interactive console
+- Access analytics
+
+Versions: versions allow to present groups of related APIs to the developers. You can use versions to handle breaking changes in your API safely.
+
+Revisions: allow you to make changes to the APIs in a controlled and safe way, without disturbing your API consumers.
+
+Each version can have multiple revisions, just like a non-versioned API. You can use revisions without using versions, or the other way around. Typically:
+- versions are used to separated API versions with breaking changes
+- revisions can be used for minor and non-breaking changes to an API
+
+APIs are the foundations of an Azure API management service
+
+APIs and their operations: each API in the Azure API Management contains a reference to the back-end service that implements the API and its operations.
+
+When talking about API access there are two concepts:
+- Products: products are how APIs are surfaced to the developers, and have one or more APIs, title, description, and terms of use.
+- Groups: groups are used to manage the visibility of products to developers.
+
+Products overview:
+- Products can be open or protected. Protected products must be subscribed to before they can be used. Developer must first subscribe, then get an API key, and the the dev can access specific APIs.
+- When a product is ready for use by developers, it can be published for developers to use it.
+- Subscription approval is configured at the product level. Developers need this subscription to access products.
+
+Azure API management groups
+- Administrators: manage API Management service instances, creating the APIs, operations, and products
+- Developers: developers are granted access to the developer portal and build applications that call the operations of an API
+- Guests: unauthenticated developer portal users with certain read-only access, such as the ability to view APIs, but not to call them
+
+Administrator can also create custom groups or leverage external groups in associated Azure Active Directory tenants.
+
+Developers:
+- Developers can be created or invited to join by administrators, or they can sigh up from the developer portal.
+- Each developer is a member of one or more groups, and can subscribe to the products that grant visibility to those groups.
+
+After deploying the api manager instance in Azure Portal, you click on Portal overview, under Developer portal, and click publish to publish the portal. You can then manage access to different APIs by clicking on the Products tab.
+- Access to the 'Starter' product does not require administrator approval. Subscribers will be abel to run 5 calls per minute, up to a maximum of 100 calls per week.
+- Access to the 'Unlimited' product requires administrator approval. Subscribers have completely unlimited acces to the APIs under this product.
+
+Under each product, you can add APIs.
+
+In the API management overview, you can test the API.
+
+##### Protect APIs and Improve Their Performance with API Management
+
+Policies: policies are a powerful capability of Azure API management that allow changing the behavior of the API through configuration. They are a collection of statements that are executed sequentially on the request of response of an API.
+- Format conversion from XMLS to JSON
+- Restrict the amount of incoming calls
+- Enforces existence and/or values of a HTTP header
+- Caches response according to the specified cache control configuration
+
+Access restriction policies
+- Limit call rate by key: prevents API usage by limiting call rate, on a per key basis
+- Validate JWT tokens: enforces existence and validity of a JWT token in header of query parameter
+- Set usage quota by key: enforces a renewable or lifetime call volume and/or bandwidth quota
+- Check HTTP header presence: enforces existence and/or value of HTTP header
+- Limit call rate by subscription: prevents API usage by limiting call rate, on a per subscription basis
+
+Advanced policies:
+- Mock response: returns a mocked response directly to the caller
+- Forward request: forwards the request to the backend service
+- Retry: retries execution of a request at the specified time intervals
+- Set request method: allows changing the HTTP moethod for a request
+- Trace: adds custom traces into the API inspector output or Application Insights
+
+Transformation policies:
+- Convert XML-JSON / JSON-XML: converts requests or response body
+- Find and replace a string in a body: finds a request or response substring and replaces it with a different substring
+- Set backend service: changes the backend service for an incoming request
+- Set query string parameter: adds, replaces value of, or deletes request query string parameter
+
+Caching policies
+- Store to cache: caches response according to the specified cache control configuration
+- Get from cache: perform cache look up and return a valid cached response when available
+- Remove value from cache: remove an item in te cache by key
+
+There are many more policies available in the Azure API Management
+
+Policity scope:
+- global scope
+- product scope
+- API scope
+- Operation scope: affects only one operation within the API
+
+When do policies execute:
+- Inbound policies execute when a request is received from a client.
+- Backend policies execute before a request is forwarde to a managed API
+- Outbound policies execute before a response is sent to a client
+- On-Error policies execute when an exception is raised
+
+Policy structure is in XML
+
+Policies support inheritence, which means that you can override a policy that is written at a higher scope.
+
+With caching policies, you can use internal caching (provided with API Management) or Azure Redis Cache.
+
+#### Microsoft Learn
+
+##### Publish and manage your APIs with Azure API Management
+
+For developers, API Management provides a range of benefits.
+- API documentation. Documentation of APIs enables calling clients to quickly integrate their solutions. API Management allows you to quickly expose the structure of your API to calling clients through modern standards like Open API. You can have more than one version of an API. With multiple versions, you can stage app updates as your consuming apps don't have to use the new version straight away.
+- Rate limiting access. If your API could potentially access a large amount of data, it's a good idea to limit the rate at which clients can request data. Rate limiting helps maintain optimal response times for every client. API Management let you set rate limits as a whole or for specific individual clients.
+- Health monitoring. APIs are consumed by remote clients. So it can be difficult to identify potential problems or errors. API Management lets you view error responses and log files, and filter by types of responses.
+- Modern formats like JSON. APIs have used many different data exchange formats over the years from XML to CSV and many more. API Management enables you to expose these formats using modern data models like JSON.
+- Connections to any API. In many businesses, APIs are located across different countries and use different formats. API Management lets you add all of these disparate APIs into single modern interface.
+- Analytics. As you develop your APIs, it's useful to see how often your APIs are being called and by which types of systems. API Management allows you to visualize this data within the Azure portal.
+- Security. Security is paramount when dealing with system data. Unauthorized breaches can cost companies money, time lost in reworking code, and reputational loss. Security tools that you can use with Azure API management include OAuth 2.0 user authorization, and integration with Azure Active Directory.
+
+Pricing tiers
+- Developer. You use the Developer tier for evaluating the API management service. You shouldn't use this tier for production deployments.
+- Basic. Entry level production use. 99.9% SLA. 1000 requests/sec. Two scale units.
+- Standard. Medium level production use. 99.9% SLA. 2500 requests/sec. Four scale units.
+- Premium. Multi region deployment. High volume use. 99.95% SLA. 4000 requests/sec. 10 scale units per region.
+- Consumption. The serverless consumption tier plan lets you pay for what you use, rather than having dedicated resources. You can quickly set up ad-hoc testing, and you can scale up API access when demand increases. The consumption tier has built-in high availability and autoscaling. Because it is serverless, you can provision a consumption tier gateway in a lot less time than the other server-based tiers.
+
+For all pricing tiers except consumption, there two default products: Starter and Unlimited
+
+API management setup
+- Create an API Management gateway. The name you use for the gateway must be globally unique within the .azure-api.net namespace.
+- Register an existing Web API with the gateway. Registering the API makes the API available to consumers at the <gateway>.azure-api.net endpoint.
+- Call the existing API through the gateway. Consumers can now use the API at the endpoint URL, or through the developer portal.
+
+To protect your APIs, you can use a subscription key. A subscription key is a unique auto-generated string which needs to be passed through in the headers of the client request. The key is directly related to a subscription which can be scoped to different areas, this gives granular control over permissions and policies. The three main subscription scopes are:
+- All APIs
+- A Single API
+- A product
+
+##### Control authentication for your APIs with Azure API Management
+
+With TLS client authentication, the API Management gateway can inspect the certificate contained within the client request and check for properties like:
+
+|Property|	Reason|
+|--------|--------|
+|Certificate Authority (CA)|	Only allow certificates signed by a particular CA.|
+|Thumbprint|	Allow certificates containing a specified thumbprint.|
+|Subject|	Only allow certificates with a specified subject.|
+|Expiration Date|	Only allow certificates that have not expired.|
+
+These properties are not mutually exclusive and they can be mixed together to form your own policy requirements. For example, you can specify that the certificate passed in the request is signed by a certain certificate authority and hasn't expired.
+
+Client certificates are signed to ensure that they are not tampered with. When a partner sends you a certificate, verify that it comes from them and not an imposter. There are two common ways to verify a certificate:
+- Check who issued the certificate. If the issuer was a certificate authority that you trust, you can use the certificate. You can configure the trusted certificate authorities in the Azure portal to automate this process.
+- If the certificate is issued by the partner, verify that it came from them. For example, if they deliver the certificate in person, you can be sure of its authenticity. These are known as self-signed certificates.
+
 ### 5.2 Develop event-based solutions
 
+#### Pluralsight
+
 ### 5.3 Develop message-based solutions
+
+#### Pluralsight
