@@ -4216,6 +4216,155 @@ Client certificates are signed to ensure that they are not tampered with. When a
 
 #### Pluralsight
 
+There are three event types:
+- Discrete: report state changes and are actionable (Event Grid)
+- Series: report a condition, time-ordere, and analyzable (Event Grid)
+- User notification: prompt user or their device for attention (Notification Hub)
+
+#### Implement Azure Event Grid Solutions
+
+Azure Event Grid:
+- Event-base architectures (pub/sub)
+- Publishers emit events and subscribers consume:
+    - Azure events and/or custom events
+- They support many subscribers to one publisher
+- You can aso filter events
+- Event Grid is highly scalable, both up or down
+- Pay for what you use (serverless)
+
+Register Event Grid Provider:
+```bash
+az provider register --namespace Microsoft.EventGrid
+az proivder show --namespace Microsoft.EventGrid --query "registrationState"
+```
+- Needs to be done at the subscription level
+- Registration takes a while (second command to see status)
+
+
+Pub/sub concepts:
+- Event signifies something changed
+- Publisher has no expectation of what happens with the event
+- Subscriber determines what to do with the event
+
+Event grid terminology
+- Events: what happened. It contains the smalles amount of data to describe what happened
+- Publishers: where it happened. Applications that emit events
+- Topics: endpoint. The publisher will send it's event to the topic. Topics is a collection of related event that the event grid will then take care of.
+- Subscriptions: event routing. Subscribers are one of the ways Event Grid takes care of topics.  Event grid routes and filters events to handlers.
+- Handlers: event handling. Apps consume events. There can be multiple handlers and subscription per event topic.
+
+Azure event publisher examples are: App Configuration, App Service, Blob Storage, Communication Services, Container Registery, Event Hubs, IoT Hub, Key Vault, Machine Learning, Maps, Media Services, Resource groups, Service Bus, Service Bus, SignalR, Subscriptions.
+
+Custom topics:
+- User defined (e.g. ASP.NET core API)
+- Same message schema as Azure Topics
+- Can send custom info with messages
+
+Event handlers:
+- Azure Functions, event Grid trigger. Input is strongly type.
+- Event Hubs
+- Azure Service Bus
+- Azure Storage Queues
+- Webhooks
+
+Workflow:
+1. Create topic
+2. Send publisher events
+3. Add subscriber info with filtering
+
+Every event has same metadata schema. The data property contains event specific information
+
+Implementing an event grid system topic:
+1. Event Grid System Topics. System topics are ready to go for Azure Services Event.
+2. Select topic type, e.g. Storage Account
+3. Select subscription, resource groups, resource
+4. Give the topic a name
+5. Create
+6. Add a subscrption (+ Event Subscription)
+7. Give name
+8. Pick Event Schema: this is the format of the messag. The event grid schema is the standard Event Grid Schema.
+9. Inspect topic details
+10. Select event types (e.g. blob creation)
+11. Select endpoint details: here you select the endpoint type
+12. Select filter: a subject of an event is a thing an event is happening to.
+13. Hit create
+
+For custom topics:
+1. Create Event Grid Topics
+2. same
+3. same
+4. same
+5. same
+6. Add Event Schema
+7. Go to resource: two thing you will nee: Access key and Endpoint
+8. Create an application that sends information to an Event Grid Topic
+
+##### Implement Azure Event Hubs Solutions
+
+Azure Event Hubs top level characteristics:
+- Scalable event processing service
+- Big data scenarios
+- Millions of events/second
+- Decouples sending and receiving data (producer / consumer)
+- Integration with Azure and non-Azure services
+- Capture events to Azure blob storage or data lake
+
+Scenarios:
+- Telemetry: live data from sensors
+- Data archival: event hub can hold the events representing the data to be archived
+- Transaction processing
+- Anomaly detection
+
+Components:
+- Namespace: container for Event Hubs
+- Event producers: send data to Event Hubs
+- Partition: Bucket of messages.
+    - One message wil go in, the next behind it
+    - Many partitions per event hub
+- Consumer groups: view of an Event Hub
+- Subscribers: reads data from event hubs
+
+Event Hubs Namespace:
+- Scopint container
+- Contains one or more Event Hubs
+- Options apply to all
+- Throughput units: pre-purchased unit of capacity that controls the througput of events
+
+Event Hubs Namespace Creation (SKU can be Standard or Basic)
+```bash
+az eventhubs namespace create --resource-group <GROUP NAME> --location <LOCATION> --name <NAMESPACE NAME> -- sku Standard
+```
+Afterwards, you create the eventhub itself. You can set the message retention to 1-7 days and the partion count can be in the range of 2-32.
+```bash
+az eventhubs eventhub create --name <EVENT HUB NAME> --namespace <NAMESPACE NAME> --message-retention 3 --partion-count 4 --g <GROUP NAME>
+```
+
+Sending Events to Event Hub from your application:
+1. Install .NET SDK via NuGet: controls communication
+2. Obtain connection info: namespace and endpoint. The endpoint will include the key
+3. Open connections: `EventHubProducerClient`, OK to cache this object.
+4. Prepare data: convert to binary (size limitations apply).
+5. Send data: single or batch events, may specify a partition. Packet of communication is max 1 MB.
+
+When events arive at the event hub, they will be stored in partitions:
+- Partitions are like a bucket for event messages
+- They hold events time-ordered as they arrive
+- Events are not deleted once read
+- Event Hubs decides which partion events are sent to
+    - Can specify partition with partion key. You are not specifying a specific partion, but you're telling the controller to send the data to the same partition each time.
+    - To specify the partion, add `Options` to the `.SendAsync` method of the Client.
+- Maximum 32 partitions
+- Good practice: create as many as expected concurrent subsribers.
+
+Reading Events from Event Hub:
+1. Install .NET SDK via NuGet: controls communication
+2. Obtain connection info: namespace and endpoint. The endpoint will include the key
+3. Open connections: `EventHubConsumerClient` or `EventProcessorClient`, OK to cache this object.
+4. Retrieve data: can specify partition, offset, date, and sequence number -> connections stay open, close them manually.
+5. Decode data: Returned event has metadata. Event body is binary.
+
+
+
 ### 5.3 Develop message-based solutions
 
 #### Pluralsight
