@@ -2643,9 +2643,7 @@ Eventual consistency
 
 #### Pluralsight notes
 
-##### Developing Solutions with Blob Storage
-
-###### Understanding Azure Blob Storage
+##### Understanding Azure Blob Storage
 
 Azure Blob Storage is a massively scalable object storage for the cloud.
 - Text files
@@ -2707,7 +2705,7 @@ The premium accounts support only LRS and ZRS:
 
 ZRS is only available in availability zones  
 
-###### Interacting with data using the Azure SDK for .NET
+##### Interacting with data using the Azure SDK for .NET
 
 Azure SDK for .NET uses client libraries as NuGet Packages. `Azure.<service-category>.<service-name>`.
 
@@ -2716,7 +2714,7 @@ The Azure.Storage.Blobs NuGet package contains 3 important classes:
 - BlobContainerClient -> blob containers
 - BlobClient -> blobs
 
-###### Setting properties and Metadata
+##### Setting properties and Metadata
 
 A blob container has system properties:
 - ETag: entity identifier. this changes every time a blob container gets updated
@@ -2739,7 +2737,7 @@ Look at properties and metadata.
 
 When you set the properties with the SDK, the existing properties are overwritten. That's why it's good to first get the properties of the blob, and then set the properties.
 
-###### Implementing data archiving and retention
+##### Implementing data archiving and retention
 
 Access tiers for block blobs:
 - Hot: frequently accessed data
@@ -2760,7 +2758,7 @@ Turn on soft deletes (data marked as deleted). Soft delete does not only work fo
 
 You can create a lease for a blob. This means that you can only update or delete a blob using the Lease ID. You can specify different tags for blobs
 
-###### Move Items in Blob Storage
+##### Move Items in Blob Storage
 
 First copy, then delete. Use Azure CLI, AzCopy, .NET client library
 
