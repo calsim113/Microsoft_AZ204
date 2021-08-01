@@ -2744,8 +2744,8 @@ Access tiers for block blobs:
 - Cool: infrequently accessed data stored for at least 30 days
 - Archive: data can be archived for at least 180 days.
 
-Hot < ---- Cool ---- > Archive
-low < --- access and transaction costs --- > high
+Hot < ---- Cool ---- > Archive  
+low < --- access and transaction costs --- > high  
 high < --- storage per GB --- > low
 
 Storage account default access tier: Hot (but can be set to Cool). The block blob access tier is inferred from the storage account, but can be set to Hot, Cool and Archive. Archive can only be set at the block level, since it is an offline access tier. That means that you cannot access a Blob set to Archive. You can read the properties and metadata, but you can only read the content if you 'rehydrate' the archived blob (set to cool or hot). This may take several hours.
